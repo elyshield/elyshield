@@ -49,8 +49,15 @@ export const ARSHIELD_DERIVATION_MESSAGE =
 export const MESSAGE_URL_BASE = 'https://arc-shield.xyz/m/#';
 export const MESSAGE_URL_PREFIX = 'v1.';
 
-// No $arshield token is deployed yet. Replace with the real address when it launches.
-export const ARSHIELD_CONTRACT: string | null = null;
+// The $arshield token on ARC. Set NEXT_PUBLIC_ARSHIELD_CONTRACT to this address;
+// the tier gate reads balanceOf against it, and the site shows it next to the
+// Buy button. Kept as a fallback so the address is never lost if the env var is
+// unset at build time.
+export const ARSHIELD_CONTRACT: string =
+  '0xD4BF098BD463D868E86ef7ea068EBF9dF03cE639';
+/** Where holders buy: the Argus token page for this contract. */
+export const ARSHIELD_BUY_URL =
+  'https://argus.world/token/0xD4BF098BD463D868E86ef7ea068EBF9dF03cE639';
 export const ARC_CHAIN_ID = 5042;
 export const ARC_CHAIN_ID_HEX = '0x13b2';
 export const ARC_RPC = 'https://rpc.mainnet.arc.io';

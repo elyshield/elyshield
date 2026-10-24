@@ -16,6 +16,7 @@ import { Magnetic } from '@/components/motion-bits';
 import { useParallax } from '@/lib/use-parallax';
 import { Reveal, HeroItem } from '@/components/reveal';
 import { Section } from '@/components/section';
+import { ARSHIELD_CONTRACT, ARSHIELD_BUY_URL } from '@/lib/arshield/constants';
 import { cn } from '@/lib/utils';
 
 /* ---------- Data ---------- */
@@ -46,7 +47,7 @@ const FAQS = [
   { q: 'Do I need a wallet?', a: 'No. A wallet is the fastest path, and it’s what powers token-gated tiers and Seal anchoring on ARC. Your keys come from one wallet signature, so they can be reproduced only if the wallet signs the same way every time — the app reads the signature back and refuses if it does not recover to the connected address. MPC and threshold signers that produce a different signature each time will fail that check, which is the intended behaviour. For files that must outlast your wallet’s curve, generate a passphrase-protected key file instead: its keys are random and never touch your wallet’s signature, so if curves fall, an attacker still has to break ML-KEM-768 too. Agents pass a key file, or the same wallet signature, to the MCP server.' },
   { q: 'Can ArShield read my files?', a: 'No. The web app is a static site and the MCP server runs in your own agent runtime. Every byte is encrypted and decrypted on your device, and no server of ours ever receives your files, their names or your keys. We hold no plaintext and no keys, so there is nothing to hand over. Like any web app, the browser side is only as safe as the code our site serves.' },
   { q: 'What happens if I lose my wallet or key?', a: 'Without the wallet or the key file, your files are unrecoverable. There is no server copy and no reset, that’s the whole point of zero-knowledge. A wallet-derived key comes back from the same wallet signature, so the practical backup of the wallet path is the wallet itself. If you would rather not depend on that, generate a passphrase-protected key file from the key-source screen: it holds random keys and opens your files on its own. Store the file and its passphrase somewhere safe.' },
-  { q: 'Why a token?', a: 'Holding $arshield on ARC raises the two limits the web app enforces: from 3 encryptions a day on Free to 25, 250 or no daily cap, and from 25 MB files to 100 MB, 1 GB or no tier cap. Encryption, Quantum Seals, messages, the MCP server and wallet or key file mode are open to every tier. No subscriptions, no accounts, just a wallet balance. Until the token launches, every wallet is on the Free tier.' },
+  { q: 'Why a token?', a: 'Holding $arshield on ARC raises the two limits the web app enforces: from 3 encryptions a day on Free to 25, 250 or no daily cap, and from 25 MB files to 100 MB, 1 GB or no tier cap. Encryption, Quantum Seals, messages, the MCP server and wallet or key file mode are open to every tier. No subscriptions, no accounts, just a wallet balance. Every wallet starts on Free and rises the moment it holds $arshield.' },
 ];
 
 /* ---------- Page ---------- */
@@ -374,13 +375,21 @@ function Tiers() {
       </div>
 
       <Reveal delay={0.1}>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-2 gap-y-3 text-[13px] text-[#5b6474]">
-          <span>The only $arshield that sets your tier:</span>
-          <span className="inline-flex items-center gap-2 rounded-md border border-brand-gold/25 bg-brand-gold/[0.06] px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-gold">
-            <span className="animate-soft-pulse h-1.5 w-1.5 rounded-full bg-brand-gold" />
-            Coming soon
-          </span>
-          <span>on ARC</span>
+        <div className="mt-8 flex flex-col items-center gap-4">
+          <a
+            href={ARSHIELD_BUY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-2 rounded-xl bg-brand-gold px-6 py-3 text-[14px] font-semibold text-[#0b0f18] transition-all hover:gap-3 hover:bg-[#e9c35f]"
+          >
+            Buy $ARSHIELD
+            <ArrowUpRight className="h-4 w-4" />
+          </a>
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-3 text-[13px] text-[#5b6474]">
+            <span>The only $arshield that sets your tier:</span>
+            <CopyContract address={ARSHIELD_CONTRACT} />
+            <span>on ARC</span>
+          </div>
         </div>
       </Reveal>
     </Section>
@@ -527,5 +536,44 @@ function Faq() {
         </div>
       </Reveal>
     </Section>
+  );
+}
+/**
+ * The $arshield contract address, shown short and copyable.
+ *
+ * The full address is 42 characters and unreadable inside a line of prose, so it
+ * is shown truncated with head and tail visible — enough for a holder to
+ * recognise it, which is the point of displaying it at all — while the full
+ * value is what gets copied. Renders nothing when no contract is configured,
+ * rather than printing an empty chip.
+ */
+function CopyContract({ address }: { address: string }) {
+  const [copied, setCopied] = useState(false);
+
+  if (!address) return null;
+  const short = `${address.slice(0, 6)}…${address.slice(-4)}`;
+
+  const run = async () => {
+    try {
+      await navigator.clipboard.writeText(address);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      // A rejected clipboard write leaves the address readable on the Argus page;
+      // there is nothing useful to say inline, so we stay quiet rather than
+      // crying failure over a copy that the user can do by hand.
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={run}
+      title={copied ? 'Copied' : `Copy ${address}`}
+      className="inline-flex items-center gap-2 rounded-md border border-brand-gold/25 bg-brand-gold/[0.06] px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-gold transition-colors hover:border-brand-gold/50"
+    >
+      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+      {short}
+    </button>
   );
 }
