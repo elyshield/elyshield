@@ -1,0 +1,99 @@
+name: Publish MCP to npm
+
+# Publishes packages/mcp when a version tag is pushed.
+#
+# Why this exists: the npm account enforces 2FA with a *security key*, and the
+# npm CLI can only satisfy a publish prompt with a typed six-digit TOTP — a
+# hardware key cannot produce one, so `npm publish` from a laptop fails with
+# E403 no matter what. Trusted publishing sidesteps the prompt entirely: GitHub
+# Actions mints a short-lived OIDC token, npm verifies the workflow identity, and
+# the publish completes with no OTP involved.
+#
+# Prerequisite, configured once on npmjs.com (package → Settings → Trusted
+# Publisher):
+#   provider          GitHub Actions
+#   organization/user elyshield
+#   repository        elyshield
+#   workflow filename publish-mcp.yml
+#
+# `id-token: write` is the permission that actually enables this. Without it
+# there is no OIDC token and npm falls back to the token/OTP flow, which is the
+# thing being worked around.
+
+on:
+  push:
+    tags:
+      - 'mcp-v*'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Pack and verify without publishing'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install
+        run: npm ci
+
+      # Core first — the MCP package builds against its output. Note this is
+      # mcp:build, not `build`: the latter runs `next build` for the web app,
+      # which the MCP package does not need.
+      - name: Build core and MCP
+        run: npm run mcp:build
+
+      - name: Check the server starts and exposes its tools
+        run: |
+          node -e "
+            const { spawnSync } = require('child_process');
+            const r = spawnSync('node', ['packages/mcp/dist/server.js'], {
+              input: JSON.stringify({jsonrpc:'2.0',id:1,method:'initialize',params:{protocolVersion:'2024-11-05',capabilities:{},clientInfo:{name:'ci',version:'1'}}}) + '\n'
+                   + JSON.stringify({jsonrpc:'2.0',id:2,method:'tools/list'}) + '\n',
+              encoding: 'utf8',
+              timeout: 20000,
+            });
+            const lines = (r.stdout || '').trim().split('\n').filter(Boolean).map(l => JSON.parse(l));
+            const init = lines.find(l => l.id === 1);
+            const tools = lines.find(l => l.id === 2);
+            if (!init?.result?.serverInfo) throw new Error('no serverInfo in initialize response');
+            const names = (tools?.result?.tools || []).map(t => t.name);
+            console.log('server :', init.result.serverInfo.name, init.result.serverInfo.version);
+            console.log('tools  :', names.length, names.join(' '));
+            if (names.length !== 6) throw new Error('expected 6 tools, got ' + names.length);
+            if (!names.every(n => n.startsWith('elyshield_'))) throw new Error('tool names are not elyshield_*');
+          "
+
+      - name: Verify the tarball
+        run: |
+          cd packages/mcp
+          npm pack --dry-run --json > /tmp/pack.json
+          node -e "
+            const r = require('/tmp/pack.json')[0];
+            console.log('name   :', r.name);
+            console.log('version:', r.version);
+            console.log('files  :', r.entryCount, '|', r.size, 'bytes');
+            if (!r.files.some(f => f.path === 'dist/server.js')) {
+              console.error('dist/server.js missing from the tarball'); process.exit(1);
+            }
+            if (r.name !== 'elyshield-mcp') {
+              console.error('unexpected package name:', r.name); process.exit(1);
+            }
+          "
+
+      - name: Publish
+        if: github.event_name == 'push' || inputs.dry_run == false
+        working-directory: packages/mcp
+        run: npm publish --access public
