@@ -31,6 +31,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Plus, ShieldCheck } from 'lucide-react';
 import { Background } from '@/components/background';
+import { BackgroundOrbit } from '@/components/background-orbit';
 import { Logo } from '@/components/header';
 import { Button } from '@/components/button';
 import { KeyfileDialog } from '@/components/keyfile-dialog';
@@ -43,8 +44,8 @@ import { detectWalletKind, isUnsupported, type Detection } from '@/lib/agent/det
 import { describeReport, inspectFile, type FileReport } from '@/lib/agent/inspect';
 import { playSteps } from '@/lib/play-steps';
 import { SealingStepper } from '@/components/sealing-stepper';
-import { ARGON2ID_PARAMS_PROD } from '@/lib/arshield/constants';
-import { ephemeralIdentity, unwrapKeyfile, wrapKeyfile, type ArShieldKeyPair } from '@/lib/arshield';
+import { ARGON2ID_PARAMS_PROD } from '@/lib/elyshield/constants';
+import { ephemeralIdentity, unwrapKeyfile, wrapKeyfile, type ElyShieldKeyPair } from '@/lib/elyshield';
 import {
   canEncrypt,
   encryptionsLeft,
@@ -133,12 +134,6 @@ export function ChatClient() {
    * the same tier source the workspace does.
    */
   const [tier, setTier] = useState<Tier>(TIER_BY_KEY.free);
-  /** Balance and price source behind the tier, so the status card shows evidence. */
-  const [holdings, setHoldings] = useState<{
-    balance: number;
-    usd: number;
-    priceSource: string;
-  } | null>(null);
   const [detection, setDetection] = useState<Detection | null>(null);
   const [walletError, setWalletError] = useState<string | null>(null);
 
@@ -304,7 +299,7 @@ export function ChatClient() {
         if (rep.action === 'decrypt') {
           say('This one can be opened only. Press Decrypt when you want it done.');
         } else if (rep.action === 'encrypt') {
-          say('This one can be sealed. Press Encrypt and it becomes a .arshield container plus a seal.');
+          say('This one can be sealed. Press Encrypt and it becomes a .elyshield container plus a seal.');
         } else if (rep.kind === 'keyfile') {
           say('That is a key file — it does the opening, so I will not seal or open it. Keep it somewhere offline.');
         } else if (rep.kind === 'seal-png') {
@@ -343,7 +338,7 @@ export function ChatClient() {
 
       // Capability is checked before the signature is requested, so a wallet that
       // cannot derive keys is caught before the user is asked to sign.
-      setBusyLabel('Checking this address on ARC…');
+      setBusyLabel('Checking this address on Elysium…');
       const det = await detectWalletKind(address);
       setDetection(det);
 
@@ -357,12 +352,12 @@ export function ChatClient() {
 
       say(`${det.kind === 'eoa' ? 'Standard signing key' : 'I could not check the address type'} — ${det.reason} Sign, and the keys derive from that signature.`);
       setBusyLabel('Waiting for the signature…');
-      const { ARSHIELD_DERIVATION_MESSAGE, identityFromWalletSignature } = await import('@/lib/arshield');
+      const { ELYSHIELD_DERIVATION_MESSAGE, identityFromWalletSignature } = await import('@/lib/elyshield');
       const signatureHex = (await provider.request({
         method: 'personal_sign',
-        params: [ARSHIELD_DERIVATION_MESSAGE, address],
+        params: [ELYSHIELD_DERIVATION_MESSAGE, address],
       })) as string;
-      const kp: ArShieldKeyPair = identityFromWalletSignature(signatureHex);
+      const kp: ElyShieldKeyPair = identityFromWalletSignature(signatureHex);
       setIdentity({ kind: 'wallet', label: `wallet · ${address}`, kp });
 
       // Resolve the tier from the same source the workspace uses, so an address
@@ -372,7 +367,6 @@ export function ChatClient() {
       void fetchTierState(address)
         .then((st) => {
           setTier(st.tier);
-          setHoldings({ balance: st.balance, usd: st.usd, priceSource: st.priceSource });
         })
         .catch(() => {
           /* Stays on Free; the cap is the safe direction to fail in. */
@@ -414,11 +408,11 @@ export function ChatClient() {
         const kp = ephemeralIdentity();
         const wrapper = await wrapKeyfile(kp, passphrase, ARGON2ID_PARAMS_PROD);
         setKdfProgress(1);
-        download(new TextEncoder().encode(JSON.stringify(wrapper, null, 2)), 'arshield-key.json', 'application/json');
+        download(new TextEncoder().encode(JSON.stringify(wrapper, null, 2)), 'elyshield-key.json', 'application/json');
         setIdentity({ kind: 'keyfile', label: 'keyfile (generated)', kp });
         setDialog(null);
         settledIdentity(
-          { kind: 'keyfile', label: 'arshield-key.json' },
+          { kind: 'keyfile', label: 'elyshield-key.json' },
           'Those keys live only in the file you just downloaded. Lose it and everything sealed to it is unrecoverable — there is no reset, by anyone.',
         );
         say('Key file made and saved. That file is the only copy of these keys, so keep it somewhere you would keep a passport.');
@@ -443,7 +437,7 @@ export function ChatClient() {
         setIdentity({ kind: 'keyfile', label: 'keyfile (loaded)', kp });
         setDialog(null);
         settledIdentity(
-          { kind: 'keyfile', label: 'arshield-key.json' },
+          { kind: 'keyfile', label: 'elyshield-key.json' },
           'Unlocked from the file you supplied. This key will seal and open from now on.',
         );
         say('Key file unlocked. Attach a file and I will read it first.');
@@ -670,16 +664,6 @@ export function ChatClient() {
               label="max file size"
               value={Number.isFinite(tier.maxFileBytes) ? `${Math.round(tier.maxFileBytes / (1024 * 1024))} MB` : 'unlimited'}
             />
-            {/* The evidence behind the tier, when it was read. A level with no
-                balance next to it invites the question it should answer. */}
-            {holdings && (
-              <Fact
-                label="balance"
-                value={`${holdings.balance.toLocaleString()} $arshield · $${holdings.usd.toFixed(2)}`}
-                mono
-                tone="idle"
-              />
-            )}
             <Fact label="file in play" value={file ? file.name : 'none'} mono />
             {detection && (
               <Fact label="wallet check" value={detection.kind.toUpperCase()} tone={detection.kind === 'smart' ? 'danger' : 'verified'} />
@@ -710,7 +694,7 @@ export function ChatClient() {
 
       case 'open': {
         if (!intent.fileRef) {
-          say('Attach the .arshield file you want opened, then tell me to open it.');
+          say('Attach the .elyshield file you want opened, then tell me to open it.');
           break;
         }
         // If this file has already been read, the report already knows whether it
@@ -790,7 +774,7 @@ export function ChatClient() {
         }
     }
   }, [
-    input, attached, busy, identity, tier, holdings, detection, report, lastResult,
+    input, attached, busy, identity, tier, detection, report, lastResult,
     push, say, show, renderResult, connectWallet, readAttached, runAction, settledIdentity,
     showPicker, compose, composing,
   ]);
@@ -829,6 +813,7 @@ export function ChatClient() {
   return (
     <>
       <Background />
+      <BackgroundOrbit subtle />
       <div className="relative flex h-svh flex-col">
         <header className="border-b border-[var(--color-hairline)] bg-[#020610]/70 backdrop-blur-xl">
           {/* Wider than the conversation column on purpose: the header carries
@@ -837,10 +822,10 @@ export function ChatClient() {
               not have to follow it. */}
           <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-4 sm:px-6">
             <div className="flex items-center gap-3">
-              <Link href="/" aria-label="ArShield home">
+              <Link href="/" aria-label="ElyShield home">
                 <Logo />
               </Link>
-              <span className="hidden items-center gap-1.5 rounded-full border border-[var(--color-hairline)] px-2.5 py-1 text-[11px] text-[#8792a3] sm:inline-flex">
+              <span className="hidden items-center gap-1.5 rounded-[3px] border border-[var(--color-hairline)] px-2.5 py-1 text-[11px] text-[#8792a3] sm:inline-flex">
                 <ShieldCheck className="h-3 w-3 text-[var(--color-verified)]" />
                 agent
               </span>

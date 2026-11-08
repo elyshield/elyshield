@@ -1,4 +1,4 @@
-# arshield-mcp
+# elyshield-mcp
 
 Post-quantum file encryption for AI agents, over MCP.
 
@@ -20,9 +20,9 @@ or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
 ```json
 {
   "mcpServers": {
-    "arshield": {
+    "elyshield": {
       "command": "npx",
-      "args": ["-y", "arshield-mcp"]
+      "args": ["-y", "elyshield-mcp"]
     }
   }
 }
@@ -31,7 +31,7 @@ or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
 **Cursor** — `~/.cursor/mcp.json`, same block.
 
 **VS Code / Cline / any stdio MCP client** — the pattern is identical: command
-`npx`, args `-y arshield-mcp`.
+`npx`, args `-y elyshield-mcp`.
 
 No install step, no global package, no account.
 
@@ -41,12 +41,12 @@ No install step, no global package, no account.
 
 | Tool | What it does |
 |---|---|
-| `arshield_encrypt_file` | Seal bytes into an `.arshield` container, signed with ML-DSA-65 |
-| `arshield_decrypt_file` | Verify the signature, then open the container |
-| `arshield_send_message` | Wrap short plaintext into a shareable encrypted URL |
-| `arshield_decrypt_message` | Read an ArShield message URL |
-| `arshield_verify_seal` | Check the metadata fields a Quantum Seal PNG carries |
-| `arshield_sign_x402` | Sign an x402 payment payload with ML-DSA-65 |
+| `elyshield_encrypt_file` | Seal bytes into an `.elyshield` container, signed with ML-DSA-65 |
+| `elyshield_decrypt_file` | Verify the signature, then open the container |
+| `elyshield_send_message` | Wrap short plaintext into a shareable encrypted URL |
+| `elyshield_decrypt_message` | Read an ElyShield message URL |
+| `elyshield_verify_seal` | Check the metadata fields a Quantum Seal PNG carries |
+| `elyshield_sign_x402` | Sign an x402 payment payload with ML-DSA-65 |
 
 ---
 
@@ -61,12 +61,12 @@ You supply a keyfile and passphrase per call:
 {
   "data_base64": "<file bytes, base64>",
   "filename": "contract.pdf",
-  "keyfile_json": "<contents of your .arshield keyfile>",
+  "keyfile_json": "<contents of your .elyshield keyfile>",
   "passphrase": "<your passphrase>"
 }
 ```
 
-Generate a keyfile in the web app at <https://arc-shield.xyz/app> — either by
+Generate a keyfile in the web app at <https://elyshield.xyz/app> — either by
 connecting a wallet (keys derived from a signature, nothing stored) or by
 generating a passphrase-protected key file.
 
@@ -113,9 +113,9 @@ Portable: move the file, keep the passphrase, keep the keys.
 
 ## Links
 
-- Web app: <https://arc-shield.xyz>
-- Source: <https://github.com/arshield/arshield>
-- Cryptography spec: <https://arc-shield.xyz/docs/security>
+- Web app: <https://elyshield.xyz>
+- Source: <https://github.com/elyshield/elyshield>
+- Cryptography spec: <https://elyshield.xyz/docs/security>
 
 ## License
 

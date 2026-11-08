@@ -3,7 +3,7 @@
  *
  * This is the difference between a text box and an agent. A bare input can only
  * ask "seal or open?"; this reads the file first and answers the question itself,
- * then offers the one action that applies. An `.arshield` container can only be
+ * then offers the one action that applies. An `.elyshield` container can only be
  * opened. A plain file can only be sealed. Guessing wrong wastes a decrypt
  * attempt or produces a container the user did not want.
  *
@@ -12,10 +12,10 @@
  * key and belongs to the real operation), and never leaves the tab.
  */
 
-import * as constants from '../arshield/constants';
+import * as constants from '../elyshield/constants';
 import type { FileRef } from './router';
 import type { Identity } from './actions';
-import { parsePublicKey } from '../arshield';
+import { parsePublicKey } from '../elyshield';
 
 /** What a container says about itself, before any key is involved. */
 export type ContainerHeader = {
@@ -117,10 +117,10 @@ export function parseContainerHeader(bytes: Uint8Array): ContainerHeader | { err
 }
 
 /**
- * Pull the ArShield tEXt chunk out of a seal PNG.
+ * Pull the ElyShield tEXt chunk out of a seal PNG.
  *
  * Mirrors what /verify reads, including the keyword variants: /app writes
- * "arshield", hand-authored seals have used "arshield-seal". Both are read so a
+ * "elyshield", hand-authored seals have used "elyshield-seal". Both are read so a
  * seal dropped into chat is recognised whichever tool produced it.
  */
 export function readSealMetadata(bytes: Uint8Array): Record<string, string> | null {
@@ -142,7 +142,7 @@ export function readSealMetadata(bytes: Uint8Array): Record<string, string> | nu
       if (sep > 0) {
         const key = raw.slice(0, sep).replace(/\0/g, '').trim();
         const value = raw.slice(sep + 1).replace(/\0/g, '').trim();
-        if (key === 'arshield' || key === 'arshield-seal' || key === 'arshield_seal') {
+        if (key === 'elyshield' || key === 'elyshield-seal' || key === 'elyshield_seal') {
           try {
             const obj = JSON.parse(value) as Record<string, unknown>;
             for (const k of Object.keys(obj)) {
@@ -266,7 +266,7 @@ export function describeReport(r: FileReport): string[] {
     lines.push(`Wire format v${r.container.version} · hybrid suite · signed`);
   } else if (r.kind === 'plain') {
     lines.push(`Plain file · ${kb(r.bytes)}`);
-    lines.push('Sealing turns this into a .arshield container plus a verifiable seal');
+    lines.push('Sealing turns this into a .elyshield container plus a verifiable seal');
   } else if (r.kind === 'seal-png') {
     lines.push('Seal receipt · PNG with an embedded hash');
     if (r.seal?.file_hash) lines.push(`Claims hash ${r.seal.file_hash.slice(0, 24)}…`);

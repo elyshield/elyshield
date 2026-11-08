@@ -9,7 +9,9 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 const core = await import(path.join(root, 'packages/core/dist/index.js'));
 
-const SIG = '0x1930df554f10ed626f42d3cee526ca0958c14a84d605f7c3eecf8ceda3f0fadc7cca82f2f30648fbe45191c63773403eaeb70fe524683d7b9a82a5c4eb0a63ed1c';
+// Anvil account #0 signing the CURRENT derivation message (domain elyshield.xyz).
+// Regenerate with: node scripts/gen-wallet-fixture.mjs
+const SIG = '0xb7a5758e74f168fc51024540e58252a6d7a4a88930a39eea8395d1f03a41741673d738079559e1646cb180b54ef92d2e4c2404b8195317e34a8234ddb699ef611b';
 const ADDR = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
 
 // 1) What the browser does after "Sign to derive": identity from signature.
@@ -30,7 +32,7 @@ function rpc(method, params) { return new Promise((r) => { pending.push(r); send
 
 await rpc('initialize', { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'e2e', version: '1' } });
 const res = await rpc('tools/call', {
-  name: 'arshield_decrypt_file',
+  name: 'elyshield_decrypt_file',
   arguments: { container_b64url: b64url, signature_hex: SIG, address: ADDR },
 });
 if (res.error) { console.log('2) MCP decrypt FAILED:', res.error.message); child.kill(); process.exit(1); }

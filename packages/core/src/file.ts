@@ -4,7 +4,7 @@ import { buildHeaderAad, decode, encode } from './codec.js';
 import * as constants from './constants.js';
 import { hybridDecapsulate, hybridEncapsulate, sign, verify } from './crypto.js';
 import { SignatureError } from './types.js';
-import type { ArShieldKeyPair, ArShieldPublicKey, ArShieldSecretKey } from './types.js';
+import type { ElyShieldKeyPair, ElyShieldPublicKey, ElyShieldSecretKey } from './types.js';
 
 const utf8Encoder = new TextEncoder();
 const utf8Decoder = new TextDecoder('utf-8', { fatal: true });
@@ -63,12 +63,12 @@ export type EncryptResult = {
   bytes: Uint8Array;
 };
 
-/** Seal bytes into an .arshield container addressed to `recipient`, signed by `signer`. */
+/** Seal bytes into an .elyshield container addressed to `recipient`, signed by `signer`. */
 export async function encryptFile(
   fileBytes: Uint8Array,
   filename: string,
-  recipient: ArShieldPublicKey,
-  signer: ArShieldSecretKey,
+  recipient: ElyShieldPublicKey,
+  signer: ElyShieldSecretKey,
 ): Promise<Uint8Array> {
   const { kemCtPq, kemCtCls, aesKey } = hybridEncapsulate(recipient);
   const nonce = randomBytes(constants.NONCE_LEN);
@@ -104,15 +104,15 @@ export type DecryptResult = {
 };
 
 /**
- * Open an .arshield container. Verifies the ML-DSA signature against `expectedSigner`
+ * Open an .elyshield container. Verifies the ML-DSA signature against `expectedSigner`
  * before touching the ciphertext, then decapsulates and decrypts.
  */
 export async function decryptFile(
-  arshieldBytes: Uint8Array,
-  recipient: ArShieldSecretKey,
+  elyshieldBytes: Uint8Array,
+  recipient: ElyShieldSecretKey,
   expectedSigner: { mldsa: Uint8Array },
 ): Promise<DecryptResult> {
-  const container = decode(arshieldBytes);
+  const container = decode(elyshieldBytes);
   const header = buildHeaderAad({
     version: container.version,
     algoId: container.algoId,
@@ -132,4 +132,4 @@ export async function decryptFile(
   return unpackAeadPlaintext(plaintext);
 }
 
-export type { ArShieldKeyPair };
+export type { ElyShieldKeyPair };

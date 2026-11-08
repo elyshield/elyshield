@@ -1,4 +1,4 @@
-# Cara cek & install MCP ArShield
+# Cara cek & install MCP ElyShield
 
 Panduan lengkap dari nol sampai jalan di Claude Desktop / Cursor.
 
@@ -9,7 +9,7 @@ Panduan lengkap dari nol sampai jalan di Claude Desktop / Cursor.
 ### Cek package udah publish belum
 
 ```bash
-npm view arshield-mcp version
+npm view elyshield-mcp version
 ```
 
 | Output | Artinya |
@@ -20,7 +20,7 @@ npm view arshield-mcp version
 Cek semua info sekaligus:
 
 ```bash
-npm view arshield-mcp
+npm view elyshield-mcp
 ```
 
 ### Cek lo login npm sebagai siapa
@@ -56,13 +56,13 @@ Enter one-time password: <kode OTP dari authenticator>
 
 ### Langkah 2 — pilih nama package
 
-**Kalau pakai `arshield-mcp`:** lo harus punya **organization** `arshield` di npm.
+**Kalau pakai `elyshield-mcp`:** lo harus punya **organization** `elyshield` di npm.
 Bikin di: https://www.npmjs.com/org/create (gratis, 2 menit).
 
-**Kalau gak mau ribet:** ganti ke `arshield-mcp` (tanpa scope, langsung bisa).
+**Kalau gak mau ribet:** ganti ke `elyshield-mcp` (tanpa scope, langsung bisa).
 Edit `packages/mcp/package.json`:
 ```json
-"name": "arshield-mcp"
+"name": "elyshield-mcp"
 ```
 
 ### Langkah 3 — cek dulu (belum publish)
@@ -75,18 +75,18 @@ Ini **dry-run** — cuma verifikasi, gak publish apa-apa. Output yang bener:
 ```
 === 1. prerequisites ===
   ✓ logged in as <username>
-  ✓ package: arshield-mcp@0.1.0
+  ✓ package: elyshield-mcp@0.1.0
   ✓ version is not yet published
 === 2. no workspace references leak ===
   ✓ no file: dependencies
 === 3. build ===
   ✓ core + mcp built
 === 4. bundle is self-contained ===
-  ✓ @arshield/core inlined, not imported
+  ✓ @elyshield/core inlined, not imported
   ✓ external kept: crypto, zod, @modelcontextprotocol/sdk
   ✓ shebang present
 === 5. the built server actually runs ===
-  ✓ initialize ok — arshield-mcp 0.1.0
+  ✓ initialize ok — elyshield-mcp 0.1.0
   ✓ tools/list returned 6 tools
 === 6. tarball contents ===
   ✓ 4 files, 68.6 kB packed
@@ -108,7 +108,7 @@ npm run mcp:publish -- --publish --tag beta
 ### Langkah 5 — verifikasi
 
 ```bash
-npm view arshield-mcp version
+npm view elyshield-mcp version
 ```
 Harus keluar `0.1.0`.
 
@@ -129,9 +129,9 @@ Harus keluar `0.1.0`.
 ```json
 {
   "mcpServers": {
-    "arshield": {
+    "elyshield": {
       "command": "npx",
-      "args": ["-y", "arshield-mcp"]
+      "args": ["-y", "elyshield-mcp"]
     }
   }
 }
@@ -141,9 +141,9 @@ Harus keluar `0.1.0`.
 ```json
 {
   "mcpServers": {
-    "arshield": {
+    "elyshield": {
       "command": "cmd",
-      "args": ["/c", "npx", "-y", "arshield-mcp"]
+      "args": ["/c", "npx", "-y", "elyshield-mcp"]
     }
   }
 }
@@ -156,9 +156,9 @@ File: `~/.cursor/mcp.json` (global) atau `.cursor/mcp.json` (per-project)
 ```json
 {
   "mcpServers": {
-    "arshield": {
+    "elyshield": {
       "command": "npx",
-      "args": ["-y", "arshield-mcp"]
+      "args": ["-y", "elyshield-mcp"]
     }
   }
 }
@@ -171,10 +171,10 @@ File: `.vscode/mcp.json`
 ```json
 {
   "servers": {
-    "arshield": {
+    "elyshield": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "arshield-mcp"]
+      "args": ["-y", "elyshield-mcp"]
     }
   }
 }
@@ -183,7 +183,7 @@ File: `.vscode/mcp.json`
 ### Tes tanpa client (langsung dari terminal)
 
 ```bash
-npx -y arshield-mcp
+npx -y elyshield-mcp
 ```
 
 Prosesnya bakal **diam** — itu **bener**. Server MCP ngobrol lewat stdin/stdout,
@@ -196,14 +196,14 @@ printf '%s\n' \
   '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"t","version":"1"}}}' \
   '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
   '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' \
-| npx -y arshield-mcp
+| npx -y elyshield-mcp
 ```
 
 Output yang diharapkan:
 
 ```json
-{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"serverInfo":{"name":"arshield-mcp","version":"0.1.0"}}}
-{"jsonrpc":"2.0","id":2,"result":{"tools":[{"name":"arshield_encrypt_file",...}]}}
+{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"serverInfo":{"name":"elyshield-mcp","version":"0.1.0"}}}
+{"jsonrpc":"2.0","id":2,"result":{"tools":[{"name":"elyshield_encrypt_file",...}]}}
 ```
 
 ---
@@ -214,22 +214,22 @@ Output yang diharapkan:
 
 | Tool | Butuh private key? | Fungsi |
 |---|---|---|
-| `arshield_encrypt_file` | ✗ tidak | Segel file jadi `.arshield` |
-| `arshield_decrypt_file` | ✓ **ya** | Buka segel (verifikasi dulu, baru buka) |
-| `arshield_send_message` | ✗ tidak | Bikin URL pesan terenkripsi |
-| `arshield_decrypt_message` | ✓ **ya** | Baca URL pesan |
-| `arshield_verify_seal` | ✗ tidak | Cek metadata Quantum Seal PNG |
-| `arshield_sign_x402` | ✓ **ya** | Tanda tangan payload x402 |
+| `elyshield_encrypt_file` | ✗ tidak | Segel file jadi `.elyshield` |
+| `elyshield_decrypt_file` | ✓ **ya** | Buka segel (verifikasi dulu, baru buka) |
+| `elyshield_send_message` | ✗ tidak | Bikin URL pesan terenkripsi |
+| `elyshield_decrypt_message` | ✓ **ya** | Baca URL pesan |
+| `elyshield_verify_seal` | ✗ tidak | Cek metadata Quantum Seal PNG |
+| `elyshield_sign_x402` | ✓ **ya** | Tanda tangan payload x402 |
 
 ### Bikin keyfile dulu
 
-Buka https://arc-shield.xyz/app → pilih salah satu:
+Buka https://elyshield.xyz/app → pilih salah satu:
 
 **A. Wallet** — connect wallet, tanda tangan pesan. Kunci diturunkan dari
 signature. Gak ada yang disimpan. Wallet yang sama = kunci yang sama.
 
 **B. Keyfile** — klik "Generate new", bikin passphrase (min 12 karakter).
-Simpan file `.arshield` yang di-download. Pindahin file itu = pindahin kunci.
+Simpan file `.elyshield` yang di-download. Pindahin file itu = pindahin kunci.
 
 ### Contoh manggil dari agent
 
@@ -237,7 +237,7 @@ Encrypt — **gak butuh keyfile**:
 
 ```json
 {
-  "tool": "arshield_encrypt_file",
+  "tool": "elyshield_encrypt_file",
   "arguments": {
     "data_base64": "<bytes file, base64>",
     "filename": "kontrak.pdf"
@@ -249,10 +249,10 @@ Decrypt — **butuh keyfile + passphrase**:
 
 ```json
 {
-  "tool": "arshield_decrypt_file",
+  "tool": "elyshield_decrypt_file",
   "arguments": {
-    "container_b64url": "<isi .arshield>",
-    "keyfile_json": "<isi file .arshield keyfile>",
+    "container_b64url": "<isi .elyshield>",
+    "keyfile_json": "<isi file .elyshield keyfile>",
     "passphrase": "<passphrase lo>"
   }
 }
@@ -288,5 +288,5 @@ dan itu disengaja: kunci yang ada di server = kunci yang bisa dibaca orang lain.
 → Butuh kode OTP. Ambil dari authenticator app lo.
 
 **"403 Forbidden" pas publish**
-→ Lo gak punya akses ke scope `@arshield`. Bikin org-nya, atau pakai nama
+→ Lo gak punya akses ke scope `@elyshield`. Bikin org-nya, atau pakai nama
 tanpa scope.

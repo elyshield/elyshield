@@ -1,5 +1,5 @@
 // Interop test: a container produced by the web core must open in the MCP server.
-// Run from /home/gumilang/arshield-clone: node scripts/interop-test.mjs
+// Run from /home/gumilang/elyshield-clone: node scripts/interop-test.mjs
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 
-// 1) Produce an .arshield container using the SAME core the web app uses.
+// 1) Produce an .elyshield container using the SAME core the web app uses.
 const core = await import(path.join(root, 'packages/core/dist/index.js'));
 const id = core.ephemeralIdentity();
 const plaintext = new TextEncoder().encode('interop: web core -> MCP decrypt');
@@ -31,7 +31,7 @@ await rpc('initialize', { protocolVersion: '2024-11-05', capabilities: {}, clien
 // so instead we round-trip via a keyfile: wrap the SAME identity and pass it.
 const kf = await core.wrapKeyfile(id, 'interop-pass', { t: 1, m: 1024, p: 1 });
 const decrypt = await rpc('tools/call', {
-  name: 'arshield_decrypt_file',
+  name: 'elyshield_decrypt_file',
   arguments: { container_b64url: b64url, keyfile_json: JSON.stringify(kf), passphrase: 'interop-pass' },
 });
 

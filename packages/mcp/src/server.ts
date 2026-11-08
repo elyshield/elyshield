@@ -8,7 +8,7 @@ import {
   ErrorCode,
 } from '@modelcontextprotocol/sdk/types.js';
 import { tools } from './tools.js';
-import { ArShieldError } from '@arshield/core';
+import { ElyShieldError } from '@elyshield/core';
 
 /**
  * Read the version from package.json rather than repeating it here.
@@ -22,7 +22,7 @@ const { version } = createRequire(import.meta.url)('../package.json') as { versi
 
 const server = new Server(
   {
-    name: 'arshield-mcp',
+    name: 'elyshield-mcp',
     version,
   },
   {
@@ -63,7 +63,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
  *   InternalError  the caller cannot; the fault is ours
  */
 function toMcpError(err: unknown): McpError {
-  if (err instanceof ArShieldError) {
+  if (err instanceof ElyShieldError) {
     return new McpError(ErrorCode.InvalidParams, `${err.code}: ${err.message}`);
   }
 

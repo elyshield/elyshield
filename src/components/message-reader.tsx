@@ -6,7 +6,7 @@ import { ArrowLeft, Lock, ShieldCheck, TriangleAlert } from 'lucide-react';
 import { Background } from '@/components/background';
 import { Logo } from '@/components/header';
 import { Reveal } from '@/components/reveal';
-import { parseMessageUrl, decryptFile } from '@/lib/arshield';
+import { parseMessageUrl, decryptFile } from '@/lib/elyshield';
 
 /**
  * Reads an encrypted message out of the URL fragment.
@@ -50,7 +50,7 @@ export function MessageReader() {
     setError(null);
     try {
       const parsed = parseMessageUrl(window.location.href);
-      const { unwrapKeyfile } = await import('@/lib/arshield');
+      const { unwrapKeyfile } = await import('@/lib/elyshield');
       const kp = await unwrapKeyfile(JSON.parse(keyfileJson), passphrase);
       const out = await decryptFile(parsed.blob, kp.secretKey, parsed.signerPublic);
       setPlaintext(new TextDecoder().decode(out.fileBytes));
@@ -68,7 +68,7 @@ export function MessageReader() {
       <div className="relative min-h-screen">
         <header className="border-b border-white/[0.06] bg-[#020610]/70 backdrop-blur-xl">
           <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 sm:px-6">
-            <Link href="/" aria-label="ArShield home"><Logo /></Link>
+            <Link href="/" aria-label="ElyShield home"><Logo /></Link>
             <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] text-[#9aa3b2] hover:text-white">
               <ArrowLeft className="h-3.5 w-3.5" /> Back to site
             </Link>
@@ -96,14 +96,14 @@ export function MessageReader() {
                 <div>
                   <div className="mb-4 flex items-center gap-2">
                     <Lock className="h-4 w-4 text-brand-gold" />
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5b6474]">
+                    <span className="text-[10px] font-medium text-[#77839a]">
                       Recipient-only message
                     </span>
                   </div>
                   <p className="mb-4 text-[13.5px] leading-relaxed text-[#8a93a3]">
                     This message was sealed to a specific public key. Drop the matching key file (and its passphrase) to open it.
                   </p>
-                  <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5b6474]">Key file JSON</label>
+                  <label className="mb-1.5 block text-[10px] font-medium text-[#77839a]">Key file JSON</label>
                   <textarea
                     value={keyfileJson}
                     onChange={(e) => setKeyfileJson(e.target.value)}
@@ -111,7 +111,7 @@ export function MessageReader() {
                     placeholder='{"version":1,"kdf":...}'
                     className="w-full rounded-xl border border-white/10 bg-[#03070f] px-3.5 py-3 font-mono text-[11px] text-[#e6e9ef] outline-none focus:border-brand-gold/50"
                   />
-                  <label className="mb-1.5 mt-3 block text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5b6474]">Passphrase</label>
+                  <label className="mb-1.5 mt-3 block text-[10px] font-medium text-[#77839a]">Passphrase</label>
                   <input
                     type="password"
                     value={passphrase}
@@ -121,7 +121,7 @@ export function MessageReader() {
                   <button
                     onClick={openWithKeyfile}
                     disabled={!keyfileJson || !passphrase}
-                    className="mt-4 w-full rounded-full bg-gold-gradient px-6 py-3 text-[14px] font-medium text-brand-ink shadow-gold-glow disabled:opacity-40"
+                    className="mt-4 w-full rounded-[3px] bg-gold-gradient px-6 py-3 text-[14px] font-medium text-brand-ink shadow-gold-glow disabled:opacity-40"
                   >
                     Open message
                   </button>
@@ -131,15 +131,15 @@ export function MessageReader() {
               {state === 'done' && (
                 <div>
                   <div className="mb-3 flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-[#6ee7a8]" />
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6ee7a8]">
+                    <ShieldCheck className="h-4 w-4 text-[#a4fbf3]" />
+                    <span className="text-[11px] font-medium text-[#a4fbf3]">
                       Signature verified
                     </span>
                   </div>
                   <div className="whitespace-pre-wrap rounded-xl border border-white/[0.08] bg-[#03070f] p-4 text-[14px] leading-relaxed text-[#e6e9ef]">
                     {plaintext}
                   </div>
-                  <p className="mt-3 text-[11.5px] text-[#5b6474]">
+                  <p className="mt-3 text-[11.5px] text-[#77839a]">
                     Decrypted locally. The ciphertext never left your browser, and no server saw this text.
                   </p>
                 </div>

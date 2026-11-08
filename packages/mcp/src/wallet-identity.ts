@@ -1,10 +1,10 @@
 import { secp256k1 } from '@noble/curves/secp256k1';
 import { keccak_256 } from '@noble/hashes/sha3';
 import { bytesToHex, concatBytes, utf8ToBytes } from '@noble/hashes/utils';
-import { ARSHIELD_DERIVATION_MESSAGE } from '@arshield/core';
+import { ELYSHIELD_DERIVATION_MESSAGE } from '@elyshield/core';
 
 /** The exact personal_sign message the web app asks a wallet to sign. */
-export const ARSHIELD_SIGN_MESSAGE = ARSHIELD_DERIVATION_MESSAGE;
+export const ELYSHIELD_SIGN_MESSAGE = ELYSHIELD_DERIVATION_MESSAGE;
 
 export const EVM_ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
 
@@ -23,7 +23,7 @@ export function canonicalRecoveryByte(signatureHex: string): string {
 }
 
 /**
- * Recover the signer address from an EIP-191 personal_sign signature over the ArShield
+ * Recover the signer address from an EIP-191 personal_sign signature over the ElyShield
  * derivation message. Returns null when the bytes are not a recoverable signature.
  * High-s signatures are refused: wallets only emit low-s, so a high-s copy is rewritten
  * bytes whose derived identity the wallet itself would never reproduce.

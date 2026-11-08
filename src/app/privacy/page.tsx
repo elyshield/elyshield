@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import { Background } from '@/components/background';
+import { BackgroundOrbit } from '@/components/background-orbit';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy · ArShield',
-  description: 'ArShield Privacy Policy.',
+  title: 'Privacy Policy · ElyShield',
+  description: 'ElyShield Privacy Policy.',
 };
 
 const NOT_COLLECTED = [
@@ -20,18 +21,19 @@ export default function PrivacyPage() {
   return (
     <>
       <Background />
+      <BackgroundOrbit subtle />
       <div className="relative min-h-screen">
         <Header />
         <main className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-          <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-brand-gold">Legal</div>
+          <div className="mb-2 text-[10px] font-medium text-brand-gold">Legal</div>
           <h1 className="text-3xl font-bold tracking-tight text-[#e6e9ef]">Privacy Policy</h1>
-          <p className="mt-2 text-[13px] text-[#5b6474]">Last updated: October 2026</p>
+          <p className="mt-2 text-[13px] text-[#77839a]">Last updated: October 2026</p>
 
           <div className="mt-10 space-y-8">
             <section>
               <h2 className="text-[16px] font-semibold text-[#e6e9ef]">The short version</h2>
               <p className="mt-2 text-[14.5px] leading-relaxed text-[#8a93a3]">
-                ArShield is built so that we cannot see your data even if we wanted to. Encryption and
+                ElyShield is built so that we cannot see your data even if we wanted to. Encryption and
                 decryption happen in your browser. Files, keys, and message plaintext never reach us.
               </p>
             </section>
@@ -72,20 +74,21 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-[16px] font-semibold text-[#e6e9ef]">Blockchain reads</h2>
               <p className="mt-2 text-[14.5px] leading-relaxed text-[#8a93a3]">
-                Once the $arshield token is live, connecting a wallet makes the app read your token balance via a
-                ARC RPC endpoint to determine your tier. This read is unauthenticated and is
-                identical to querying any block explorer: the RPC endpoint sees the address it is asked about.
-                No wallet address is stored by us. Pages you visit without connecting a wallet or submitting a
-                Seal send nothing to the chain.
+                There is no token, so connecting a wallet reads no balance and no allowance. The only chain call
+                the app can make is a plain {' '}
+                <span className="font-mono text-[13px] text-[#c7cdd8]">eth_getCode</span> to check whether an
+                address is a contract, and it is skipped entirely unless you ask for it. That read is
+                unauthenticated and identical to querying any block explorer. No wallet address is stored by us,
+                and pages you visit without connecting a wallet send nothing to a chain.
               </p>
             </section>
 
             <section>
               <h2 className="text-[16px] font-semibold text-[#e6e9ef]">Third-party services</h2>
               <p className="mt-2 text-[14.5px] leading-relaxed text-[#8a93a3]">
-                Our site is served by Vercel. See{' '}
-                <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-brand-gold hover:underline">
-                  Vercel&apos;s Privacy Policy
+                Our site is served by Cloudflare Pages. See{' '}
+                <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer" className="text-brand-gold hover:underline">
+                  Cloudflare&apos;s Privacy Policy
                 </a>
                 .
               </p>
@@ -100,7 +103,7 @@ export default function PrivacyPage() {
               <h2 className="text-[16px] font-semibold text-[#e6e9ef]">Contact</h2>
               <p className="mt-2 text-[14.5px] leading-relaxed text-[#8a93a3]">
                 Questions about privacy, or a security report:{' '}
-                <a href="mailto:hello@arc-shield.xyz" className="text-brand-gold hover:underline">hello@arc-shield.xyz</a>
+                <a href="mailto:hello@elyshield.xyz" className="text-brand-gold hover:underline">hello@elyshield.xyz</a>
               </p>
             </section>
           </div>

@@ -15,7 +15,7 @@ export const dynamic = 'force-static';
  * Priorities reflect what the site is for: the app and the crypto spec are what
  * people are looking for; legal pages exist to be found only if you need them.
  */
-const SITE_URL = 'https://arshield.pages.dev';
+const SITE_URL = 'https://elyshield.pages.dev';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
@@ -33,7 +33,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/docs/architecture', priority: 0.75, changeFrequency: 'monthly' },
     { path: '/docs/security', priority: 0.75, changeFrequency: 'monthly' },
     { path: '/docs/features', priority: 0.7, changeFrequency: 'monthly' },
-    { path: '/docs/tokenomics', priority: 0.7, changeFrequency: 'monthly' },
     { path: '/docs/roadmap', priority: 0.7, changeFrequency: 'monthly' },
     { path: '/docs/getting-started', priority: 0.7, changeFrequency: 'monthly' },
     { path: '/privacy', priority: 0.3, changeFrequency: 'yearly' },

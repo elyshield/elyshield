@@ -14,8 +14,8 @@
 import {
   decryptFile,
   encryptFile,
-  type ArShieldKeyPair,
-} from '@/lib/arshield';
+  type ElyShieldKeyPair,
+} from '@/lib/elyshield';
 import {
   buildSealPng,
   encryptMessage,
@@ -27,7 +27,7 @@ import type { FileRef } from '@/lib/agent/router';
 export type Identity = {
   kind: 'wallet' | 'keyfile';
   label: string;
-  kp: ArShieldKeyPair;
+  kp: ElyShieldKeyPair;
 };
 
 export type AgentResult =
@@ -58,7 +58,7 @@ async function sha256Hex(bytes: Uint8Array): Promise<string> {
 }
 
 /**
- * Seal a file. Produces the .arshield container and the verifiable seal PNG.
+ * Seal a file. Produces the .elyshield container and the verifiable seal PNG.
  *
  * The hash is taken over the container, not the plaintext, so /verify can check
  * what was actually downloaded against what the seal claims.
@@ -73,7 +73,7 @@ export async function sealFile(file: FileRef, identity: Identity): Promise<Agent
     );
     const hash = await sha256Hex(container);
     const seal = await buildSealPng(hash, file.name);
-    return { ok: true, kind: 'sealed', name: `${file.name}.arshield`, bytes: container, seal, hash };
+    return { ok: true, kind: 'sealed', name: `${file.name}.elyshield`, bytes: container, seal, hash };
   } catch (e) {
     if (isSmartWalletError(e)) {
       return {

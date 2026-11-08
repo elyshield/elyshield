@@ -11,10 +11,10 @@ import {
   CorruptFileError,
   InvalidPassphraseError,
   SignatureError,
-  type ArShieldKeyPair,
-} from '@arshield/core';
+  type ElyShieldKeyPair,
+} from '@elyshield/core';
 import { z } from 'zod';
-import { ARSHIELD_SIGN_MESSAGE, recoverPersonalSigner, canonicalRecoveryByte } from './wallet-identity.js';
+import { ELYSHIELD_SIGN_MESSAGE, recoverPersonalSigner, canonicalRecoveryByte } from './wallet-identity.js';
 
 /**
  * Key-source rules (mirror the web app):
@@ -35,15 +35,15 @@ const b64urlToStd = (s: string) => s.replaceAll('-', '+').replaceAll('_', '/');
 
 export type KeySource = {
   kind: 'keyfile';
-  kp: ArShieldKeyPair;
+  kp: ElyShieldKeyPair;
   address?: string;
 } | {
   kind: 'wallet';
-  kp: ArShieldKeyPair;
+  kp: ElyShieldKeyPair;
   address: string;
 } | {
   kind: 'ephemeral';
-  kp: ArShieldKeyPair;
+  kp: ElyShieldKeyPair;
   address?: undefined;
 };
 
@@ -80,7 +80,7 @@ function parseKeySource(args: {
     if (args.signature_hex_repeat && args.signature_hex_repeat !== args.signature_hex) {
       return Promise.reject(new Error('signature_hex and signature_hex_repeat must be identical'));
     }
-    const signer = recoverPersonalSigner(ARSHIELD_SIGN_MESSAGE, args.signature_hex!);
+    const signer = recoverPersonalSigner(ELYSHIELD_SIGN_MESSAGE, args.signature_hex!);
     if (!signer || signer.toLowerCase() !== args.address!.toLowerCase()) {
       return Promise.reject(new Error('The signature does not match the provided address'));
     }
@@ -91,18 +91,18 @@ function parseKeySource(args: {
 }
 
 const keySourceFields = {
-  keyfile_json: z.string().optional().describe('The wrapped keyfile JSON from ArShield /app (Back up keys)'),
+  keyfile_json: z.string().optional().describe('The wrapped keyfile JSON from ElyShield /app (Back up keys)'),
   passphrase: z.string().optional().describe('Passphrase of the keyfile'),
-  signature_hex: z.string().optional().describe('65-byte EOA personal_sign signature (0x + 130 hex chars) over the ArShield derivation message'),
+  signature_hex: z.string().optional().describe('65-byte EOA personal_sign signature (0x + 130 hex chars) over the ElyShield derivation message'),
   signature_hex_repeat: z.string().optional().describe('Repeat of signature_hex for confirmation'),
   address: z.string().optional().describe('0x address that produced the signature'),
 } as const;
 
 export const tools = [
   {
-    name: 'arshield_encrypt_file',
+    name: 'elyshield_encrypt_file',
     description:
-      'Encrypt bytes under hybrid ML-KEM-768 + X25519 and sign the envelope with ML-DSA-65 (ArShield .arshield container). ' +
+      'Encrypt bytes under hybrid ML-KEM-768 + X25519 and sign the envelope with ML-DSA-65 (ElyShield .elyshield container). ' +
       'Returns base64url of the container. Sign with a keyfile, a wallet signature, or a fresh ephemeral identity.',
     inputSchema: {
       type: 'object',
@@ -123,13 +123,13 @@ export const tools = [
     },
   },
   {
-    name: 'arshield_decrypt_file',
+    name: 'elyshield_decrypt_file',
     description:
-      'Decrypt an ArShield .arshield container (base64url). Verifies the ML-DSA-65 signature and returns the original file bytes and filename.',
+      'Decrypt an ElyShield .elyshield container (base64url). Verifies the ML-DSA-65 signature and returns the original file bytes and filename.',
     inputSchema: {
       type: 'object',
       properties: {
-        container_b64url: { type: 'string', description: 'The .arshield container encoded base64url' },
+        container_b64url: { type: 'string', description: 'The .elyshield container encoded base64url' },
         ...keySourceFields,
       },
       required: ['container_b64url'],
@@ -146,9 +146,9 @@ export const tools = [
     },
   },
   {
-    name: 'arshield_send_message',
+    name: 'elyshield_send_message',
     description:
-      'Wrap a short plaintext (max 64KB) into a shareable encrypted ArShield message URL. The ciphertext lives in the URL #fragment. ' +
+      'Wrap a short plaintext (max 64KB) into a shareable encrypted ElyShield message URL. The ciphertext lives in the URL #fragment. ' +
       'With an ephemeral sender the secret key is embedded so the recipient can decrypt without setup.',
     inputSchema: {
       type: 'object',
@@ -174,13 +174,13 @@ export const tools = [
     },
   },
   {
-    name: 'arshield_decrypt_message',
+    name: 'elyshield_decrypt_message',
     description:
-      'Read an ArShield encrypted message URL (like the /m page does). Returns the plaintext and the signer key that sealed it.',
+      'Read an ElyShield encrypted message URL (like the /m page does). Returns the plaintext and the signer key that sealed it.',
     inputSchema: {
       type: 'object',
       properties: {
-        url: { type: 'string', description: 'The arshield message URL' },
+        url: { type: 'string', description: 'The elyshield message URL' },
         ...keySourceFields,
       },
       required: ['url'],
@@ -225,9 +225,9 @@ export const tools = [
     },
   },
   {
-    name: 'arshield_verify_seal',
+    name: 'elyshield_verify_seal',
     description:
-      'Parse the metadata fields an ArShield Quantum Seal PNG carries (unsigned) and, given an envelope, compare its sha256 against file_hash. Seal fields: file_hash, anchor_tx, anchor_chain, anchor_registry, anchor_time, anchor_account.',
+      'Parse the metadata fields an ElyShield Quantum Seal PNG carries (unsigned) and, given an envelope, compare its sha256 against file_hash. Seal fields: file_hash, anchor_tx, anchor_chain, anchor_registry, anchor_time, anchor_account.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -245,9 +245,9 @@ export const tools = [
     },
   },
   {
-    name: 'arshield_sign_x402',
+    name: 'elyshield_sign_x402',
     description:
-      'Sign an x402 payment payload with ML-DSA-65 under context arshield-v1-x402. Returns the signature (base64url) the server can verify with the provided public key.',
+      'Sign an x402 payment payload with ML-DSA-65 under context elyshield-v1-x402. Returns the signature (base64url) the server can verify with the provided public key.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -271,5 +271,5 @@ export const tools = [
   },
 ] as const;
 
-export type ArShieldTool = (typeof tools)[number];
+export type ElyShieldTool = (typeof tools)[number];
 export { CorruptFileError, InvalidPassphraseError, SignatureError };

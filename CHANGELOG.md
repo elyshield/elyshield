@@ -1,6 +1,6 @@
 # Changelog
 
-Notable changes to ArShield. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
+Notable changes to ElyShield. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
@@ -21,7 +21,7 @@ versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `/m` had no message reader — a recipient clicking a shared link hit a dead end. Added the
   reader; the composer and reader now share the route by fragment presence
 - The seal verifier could not read seals written by the app. It expected per-field `tEXt`
-  keywords, while the app writes one `arshield` chunk containing JSON. It now reads both
+  keywords, while the app writes one `elyshield` chunk containing JSON. It now reads both
 - Docs claimed `Ed25519` signatures, `WebAssembly`, and a signature that binds the
   recipient and timestamp. None were true. Corrected against the source
 - Analytics were described that do not exist; a "Back up keys" button was documented that
@@ -43,7 +43,7 @@ versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.3.0]
 
 ### Added
-- `@arshield/mcp` — the MCP server package
+- `@elyshield/mcp` — the MCP server package
 - Hybrid ML-KEM-768 + X25519 key agreement via HKDF-SHA256
 - ML-DSA-65 signatures over the envelope
 - Argon2id-wrapped keyfiles
@@ -51,8 +51,8 @@ versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.1.0]
 
 ### Added
-- Initial `.arshield` container format
+- Initial `.elyshield` container format
 - Browser file encryption and decryption, entirely client-side
 - Hybrid post-quantum crypto core (`packages/core`)
 
-[Unreleased]: https://github.com/arshield/arshield/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/elyshield/elyshield/compare/v0.3.1...HEAD

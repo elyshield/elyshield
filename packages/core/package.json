@@ -1,7 +1,7 @@
 {
-  "name": "@arshield/core",
+  "name": "@elyshield/core",
   "version": "0.1.0",
-  "description": "ArShield post-quantum cryptographic core: hybrid ML-KEM-768 + X25519 encryption, ML-DSA-65 signatures, AES-256-GCM, Argon2id keyfiles.",
+  "description": "ElyShield post-quantum cryptographic core: hybrid ML-KEM-768 + X25519 encryption, ML-DSA-65 signatures, AES-256-GCM, Argon2id keyfiles.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

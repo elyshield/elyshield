@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Publish arshield-mcp to npm.
+ * Publish elyshield-mcp to npm.
  *
  * Runs the checks that matter before a release, because the failure modes here
  * are quiet: a tarball missing its bundle installs fine and then crashes on the
@@ -77,18 +77,18 @@ const bundle = readFileSync(distFile, 'utf8');
 ok(`dist/server.js present (${(bundle.length / 1024).toFixed(0)} kB)`);
 
 console.log('\n=== 4. bundle is self-contained ===');
-if (/from\s+["']@arshield\/core["']/.test(bundle)) {
+if (/from\s+["']@elyshield\/core["']/.test(bundle)) {
   fail(
-    'the bundle still imports @arshield/core, which is a workspace package and\n' +
+    'the bundle still imports @elyshield/core, which is a workspace package and\n' +
     '    is not on npm. Set noExternal in tsup.config.ts so it is inlined.',
   );
 }
-ok('@arshield/core inlined, not imported');
+ok('@elyshield/core inlined, not imported');
 for (const b of ['crypto', 'zod', '@modelcontextprotocol/sdk']) {
   if (new RegExp(`from\\s+["']${b}`).test(bundle)) ok(`external kept: ${b}`);
 }
 if (!bundle.startsWith('#!/usr/bin/env node')) {
-  fail('the shebang is missing, so `npx arshield-mcp` will not execute.');
+  fail('the shebang is missing, so `npx elyshield-mcp` will not execute.');
 }
 ok('shebang present');
 

@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, Boxes, Cpu, Fingerprint, LayoutGrid, Rocket, ShieldCheck, Coins } from 'lucide-react';
+import { ArrowRight, Boxes, Cpu, Fingerprint, LayoutGrid, Rocket, ShieldCheck } from 'lucide-react';
 import { DocsLayout, DocTitle } from '@/components/layout-docs';
 import { Reveal } from '@/components/reveal';
 
 export const metadata: Metadata = {
-  title: 'ArShield Docs',
+  title: 'ElyShield Docs',
   description:
-    'Documentation for ArShield: the hybrid post-quantum stack, the .arshield container, wallet-derived identity, and how $arshield gates encryption capacity.',
+    'Documentation for ElyShield: the hybrid post-quantum stack, the .elyshield container, wallet-derived identity, and how $elyshield gates encryption capacity.',
 };
 
 const CARDS = [
@@ -20,7 +20,7 @@ const CARDS = [
   {
     href: '/docs/architecture',
     label: 'Architecture',
-    desc: 'The hybrid post-quantum stack, the .arshield container, and wallet-derived identity.',
+    desc: 'The hybrid post-quantum stack, the .elyshield container, and wallet-derived identity.',
     icon: Boxes,
   },
   {
@@ -42,12 +42,6 @@ const CARDS = [
     icon: LayoutGrid,
   },
   {
-    href: '/docs/tokenomics',
-    label: 'Token Utility',
-    desc: 'How $arshield gates encryption capacity. Hold more, encrypt more.',
-    icon: Coins,
-  },
-  {
     href: '/docs/roadmap',
     label: 'Roadmap',
     desc: 'What ships today, and what is next. An honest plan, with no dates.',
@@ -58,9 +52,9 @@ const CARDS = [
 export default function DocsIndexPage() {
   return (
     <DocsLayout>
-      <DocTitle eyebrow="Documentation">ArShield Docs</DocTitle>
+      <DocTitle eyebrow="Documentation">ElyShield Docs</DocTitle>
       <p className="mb-10 max-w-2xl text-[14.5px] leading-relaxed text-[#8a93a3]">
-        Everything you need to understand and use ArShield, from your first encrypted file to the
+        Everything you need to understand and use ElyShield, from your first encrypted file to the
         post-quantum primitives underneath.
       </p>
 

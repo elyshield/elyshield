@@ -1,34 +1,34 @@
-# ArShield
+# ElyShield
 
-[![CI](https://github.com/arshield/arshield/actions/workflows/ci.yml/badge.svg)](https://github.com/arshield/arshield/actions/workflows/ci.yml)
+[![CI](https://github.com/elyshield/elyshield/actions/workflows/ci.yml/badge.svg)](https://github.com/elyshield/elyshield/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![MCP](https://img.shields.io/badge/MCP-6%20tools-blue)](./packages/mcp)
-[![Built for ARC](https://img.shields.io/badge/built%20for-ARC%20(5042)-8a6d1f)](https://arc-shield.xyz)
+[![Built for Elysium](https://img.shields.io/badge/built%20for-Elysium%20(99901)-8a6d1f)](https://elyshield.xyz)
 
 **Post-quantum envelopes for files, messages and agents.** Encryption happens on your
-device; there is no ArShield server that can see your plaintext.
+device; there is no ElyShield server that can see your plaintext.
 
-A coin can move to a fresh address when the maths gets shaky. A file cannot. ArShield
-wraps it in ML-KEM-768 + X25519, signs it with ML-DSA-65, and hands you a `.arshield`
+A coin can move to a fresh address when the maths gets shaky. A file cannot. ElyShield
+wraps it in ML-KEM-768 + X25519, signs it with ML-DSA-65, and hands you a `.elyshield`
 container that opens on any device with the same keys — in the browser, or from your agent
 over MCP.
 
 ```
 npm run build     # static export → out/  (the web app is just files)
-npx -y @arshield/mcp   # the agent side, same crypto core
+npx -y @elyshield/mcp   # the agent side, same crypto core
 ```
 
 ## Why this exists
 
 Nearly every wallet and agent signature today rides on elliptic curves. Anything sealed
-with curves alone can be copied now and opened later, on the day those curves fall. ArShield
+with curves alone can be copied now and opened later, on the day those curves fall. ElyShield
 adds a lattice-based layer on top, so a copy taken today needs **both** broken.
 
 ## What it does
 
 | Surface | How you use it |
 |---|---|
-| **Browser** | Drop a file at [arc-shield.xyz/app](https://arc-shield.xyz/app) → get a `.arshield` envelope + a Quantum Seal. Nothing is uploaded. |
+| **Browser** | Drop a file at [elyshield.xyz/app](https://elyshield.xyz/app) → get a `.elyshield` envelope + a Quantum Seal. Nothing is uploaded. |
 | **Messages** | Seal short text into a link whose key rides in the URL fragment — never sent to a server. |
 | **Agents (MCP)** | Six tools over stdio for Claude, Cursor, or any MCP client. Same envelope, same keys. |
 
@@ -49,15 +49,15 @@ both have to fail.
 | Symmetric AEAD | AES-256-GCM | NIST SP 800-38D |
 | Passphrase KDF | Argon2id | t=3, m=64MB, p=1 |
 
-**Container format** — `.arshield`: magic `ARSHD`, a cleartext header (algorithm ids, KEM
+**Container format** — `.elyshield`: magic `ELYSD`, a cleartext header (algorithm ids, KEM
 ciphertexts, nonce) that is used as AES-GCM additional authenticated data *and* covered by
 the ML-DSA-65 signature. Filename and size live encrypted inside the payload.
 
 **Key derivation** — two paths, same keys either way:
 
 - a passphrase-wrapped **keyfile** (Argon2id → AES-256-GCM), random keys, wallet-independent;
-- a **wallet signature**: EIP-191 `personal_sign` over the fixed ArShield derivation message
-  (domain `arc-shield.xyz`), fed through HKDF-SHA256 into three seeds (ML-KEM / X25519 / ML-DSA).
+- a **wallet signature**: EIP-191 `personal_sign` over the fixed ElyShield derivation message
+  (domain `elyshield.xyz`), fed through HKDF-SHA256 into three seeds (ML-KEM / X25519 / ML-DSA).
 
 Same wallet, same keys, in the browser and in the agent. No key export step.
 
@@ -67,7 +67,7 @@ Same wallet, same keys, in the browser and in the agent. No key export step.
 src/                 Next.js 16 web app (static export, no backend)
 packages/core/       crypto core — envelope, keyfile, identity, message URLs
 packages/mcp/        MCP server — six tools over stdio
-docs/                architecture, security, token utility, roadmap
+docs/                architecture, security, features, roadmap
 SECURITY.md          threat model, limitations, how to report
 ```
 
@@ -97,15 +97,15 @@ short version:
   `@noble/post-quantum`. This is stated rather than hidden, because you should factor it in.
 - **No recovery exists.** Lose your wallet, keyfile, and passphrase and your files are gone.
   That is the product, not a bug.
-- **Tier gating is client-side.** A soft gate, not a control. There is no account and no
-  server to enforce it.
+- **One plan, no token gate.** There is no token and no balance read. The daily cap and the
+  file-size cap apply equally to everyone and are enforced in the browser.
 
 ## Docs
 
-- [Architecture](https://arc-shield.xyz/docs/architecture) — the hybrid stack and the container
-- [Security](https://arc-shield.xyz/docs/security) — the five guarantees, and how each is enforced
-- [For agents](https://arc-shield.xyz/docs/for-agents) — installing and using the MCP server
-- [Roadmap](https://arc-shield.xyz/docs/roadmap) — what ships today, what is next, no dates
+- [Architecture](https://elyshield.xyz/docs/architecture) — the hybrid stack and the container
+- [Security](https://elyshield.xyz/docs/security) — the five guarantees, and how each is enforced
+- [For agents](https://elyshield.xyz/docs/for-agents) — installing and using the MCP server
+- [Roadmap](https://elyshield.xyz/docs/roadmap) — what ships today, what is next, no dates
 
 ## Contributing
 

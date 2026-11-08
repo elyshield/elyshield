@@ -1,18 +1,27 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
 
 /**
- * ArShield's Reveal: motion.div fade-up on scroll-into-view.
- * initial { opacity: 0, y: 20 } → whileInView { opacity: 1, y: 0 }
- * duration 0.6, ease cubic [0.22, 1, 0.36, 1], once, margin -80px.
+ * No entrance animation.
+ *
+ * Both of these used to wrap every block in a framer-motion fade-up: the hero
+ * staggered five of them in sequence (0ms, 120ms, 240ms, 360ms, 500ms) and every
+ * section below faded in again as it scrolled into view. The combined effect was
+ * a page that visibly assembles itself, five times, then keeps re-animating as
+ * you read it — which is the "busy" half of why the site felt fussy.
+ *
+ * Content that is already on screen does not need to announce that it arrived.
+ * A single motion moment is worth keeping; a page that moves everything it owns
+ * is noise. The one motion moment now lives in the background orbit, which is
+ * continuous rather than an entrance.
+ *
+ * The API is unchanged so every call site keeps compiling, and the props are
+ * still accepted (and ignored) rather than removed — deleting `delay` from ~30
+ * call sites would be churn for no visible benefit.
  */
 export function Reveal({
   children,
-  delay = 0,
-  y = 20,
-  once = true,
   className,
 }: {
   children: ReactNode;
@@ -21,37 +30,16 @@ export function Reveal({
   once?: boolean;
   className?: string;
 }) {
-  return (
-    <motion.div
-      className={className}
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once, margin: '-80px' }}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {children}
-    </motion.div>
-  );
+  return <div className={className}>{children}</div>;
 }
 
-/** Smaller fade-up used for hero items (y: 10, duration .5). */
 export function HeroItem({
   children,
-  delay = 0,
   className,
 }: {
   children: ReactNode;
   delay?: number;
   className?: string;
 }) {
-  return (
-    <motion.div
-      className={className}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {children}
-    </motion.div>
-  );
+  return <div className={className}>{children}</div>;
 }

@@ -4,19 +4,19 @@ import { SocialLinks } from './social-links';
 
 const COLS = [
   {
-    title: 'PRODUCT',
+    title: 'Product',
     links: [
       { href: '/chat', label: 'Agents' },
       { href: '/app', label: 'Launch app' },
       { href: '/mcp', label: 'MCP server' },
       { href: '/m', label: 'Messages' },
       { href: '/verify', label: 'Verify Seal' },
-      { href: '/#tiers', label: 'Tiers' },
+      { href: '/#limits', label: 'Limits' },
       { href: '/#shield', label: 'Shield (roadmap)' },
     ],
   },
   {
-    title: 'RESOURCES',
+    title: 'Resources',
     links: [
       { href: '/docs', label: 'Docs' },
       { href: '/docs/features', label: 'Features' },
@@ -26,11 +26,11 @@ const COLS = [
     ],
   },
   {
-    title: 'LEGAL',
+    title: 'Legal',
     links: [
       { href: '/terms', label: 'Terms' },
       { href: '/privacy', label: 'Privacy' },
-      { href: 'mailto:hello@arc-shield.xyz', label: 'Contact' },
+      { href: 'mailto:hello@elyshield.xyz', label: 'Contact' },
     ],
   },
 ];
@@ -44,7 +44,7 @@ export function Footer() {
             <Logo />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-[#7b8493]">
               Security between agents. Post-quantum envelopes for files and messages, signatures for
-              x402 receipts. MCP-native. Built for ARC.
+              x402 receipts. MCP-native. Built for Elysium.
             </p>
 
             {/* Brighter than the header variant: this column has nothing
@@ -54,14 +54,14 @@ export function Footer() {
               <SocialLinks tone="bright" />
             </div>
 
-            <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.28em] text-[#5b6474]">
-              arc-shield.xyz
+            <p className="mt-6 text-[11px] font-medium text-[#77839a]">
+              elyshield.xyz
             </p>
           </div>
 
           {COLS.map((col) => (
             <div key={col.title}>
-              <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#5b6474]">
+              <h4 className="text-[11px] font-medium text-[#77839a]">
                 {col.title}
               </h4>
               <ul className="mt-4 space-y-2.5">
@@ -80,10 +80,10 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 border-t border-white/[0.06] pt-6 text-[13px] text-[#5b6474] sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 ArShield. Built for ARC. Built on open-source noble cryptography.</p>
-          <p className="font-semibold uppercase tracking-[0.18em] text-[#7b8493]">
-            Holders encrypt more.
+        <div className="mt-12 flex flex-col gap-3 border-t border-white/[0.06] pt-6 text-[13px] text-[#77839a] sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2026 ElyShield. Built for Elysium. Built on open-source noble cryptography.</p>
+          <p className="font-medium text-[#7b8493]">
+            One plan for everyone.
           </p>
         </div>
       </div>

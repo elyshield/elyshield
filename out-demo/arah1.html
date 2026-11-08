@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arah 1 — Bunker / Instrument</title>
+<link rel="icon" href="data:,">
+<style>
+  /* ============================================================
+     ARAH 1 — "BUNKER / INSTRUMENT"
+
+     The product is an unopenable envelope. The visual language should
+     be an instrument panel, not a SaaS landing page. Concretely:
+
+       - no pill eyebrows. Section rhythm comes from large numerals in
+         the margin, not from a badge repeated 8 times.
+       - panels, not floating rounded boxes: 6px corners, a 2px accent
+         rule on the left, hairline dividers inside.
+       - depth from LAYERS (3 stacked surfaces), not from one shadow.
+       - one border value, not the four that existed before.
+       - monospace carries the technical labels; sans carries prose.
+     ============================================================ */
+
+  @font-face{font-family:Edge;src:local("Inter"),local("Helvetica Neue"),local(Arial);}
+  :root{
+    --aqua:#69fae9;
+    --aqua-dim:#2dd9d1;
+    --aqua-faint:rgba(105,250,233,.10);
+    --ink:#e8ebf0;
+    --ink-2:#98a3b4;
+    --ink-3:#5f6b7d;
+    --void:#000513;
+    --s1:#080e1a;      /* surface, lowest */
+    --s2:#0c1320;      /* surface, raised */
+    --s3:#111a29;      /* surface, highest */
+    --hair:rgba(255,255,255,.07);
+    --hair-2:rgba(255,255,255,.11);
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--void);
+    color:var(--ink);
+    font:400 15px/1.65 Edge,system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:auto;
+    /* One vignette + one faint grid. Enough to give the page a floor,
+       not enough to read as decoration. */
+    background-image:
+      radial-gradient(1100px 620px at 12% -8%, rgba(105,250,233,.055), transparent 62%),
+      radial-gradient(900px 520px at 88% 8%, rgba(45,217,209,.035), transparent 60%),
+      linear-gradient(rgba(255,255,255,.017) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.017) 1px, transparent 1px);
+    background-size:auto,auto,64px 64px,64px 64px;
+    background-attachment:fixed;
+  }
+  ::selection{background:rgba(105,250,233,.22);color:#d4fffa}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+  /* ---------- top bar ---------- */
+  header{
+    position:sticky;top:0;z-index:20;
+    background:rgba(0,5,19,.82);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--hair);
+  }
+  .bar{display:flex;align-items:center;gap:32px;height:62px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:600;letter-spacing:-.01em}
+  .brand img{width:26px;height:26px;display:block}
+  nav{display:flex;gap:26px;margin-left:auto}
+  nav a{
+    color:var(--ink-2);text-decoration:none;font-size:13px;
+    letter-spacing:.02em;padding:4px 0;border-bottom:1px solid transparent;
+    transition:color .15s,border-color .15s;
+  }
+  nav a:hover{color:var(--ink);border-bottom-color:var(--aqua)}
+
+  /* ---------- section scaffold: numeral in the margin ---------- */
+  .sec{
+    display:grid;
+    grid-template-columns:64px 1fr;
+    gap:0 40px;
+    padding:88px 0;
+    border-top:1px solid var(--hair);
+  }
+  .sec:first-of-type{border-top:none}
+  .num{
+    font:600 13px/1 var(--mono);
+    color:var(--aqua);
+    opacity:.55;
+    padding-top:6px;
+    letter-spacing:.08em;
+  }
+  .sec > .body{min-width:0}
+
+  .kicker{
+    font:500 11px/1 var(--mono);
+    letter-spacing:.19em;
+    text-transform:uppercase;
+    color:var(--aqua-dim);
+    margin-bottom:18px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .kicker::before{
+    content:"";width:18px;height:1px;background:var(--aqua-dim);opacity:.6;
+  }
+
+  /* Typographic scale with real steps — 54 / 32 / 22.
+     The old page used 36px for all 9 headings. */
+  h1{font-size:clamp(38px,5.4vw,58px);line-height:1.04;letter-spacing:-.028em;font-weight:650}
+  h2{font-size:clamp(26px,3vw,32px);line-height:1.15;letter-spacing:-.018em;font-weight:600}
+  h3{font-size:17px;line-height:1.35;letter-spacing:-.008em;font-weight:600}
+  .lede{font-size:16.5px;color:var(--ink-2);max-width:56ch;margin-top:20px}
+  p{color:var(--ink-2);max-width:62ch}
+  em{font-style:normal;color:var(--aqua)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:104px 0 96px;border-top:none}
+  .hero h1{max-width:16ch}
+  .hero .lede{margin-top:24px}
+  .cta{display:flex;align-items:center;gap:14px;margin-top:36px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    background:linear-gradient(180deg,#7ffbed,var(--aqua-dim));
+    color:#00201d;font-weight:600;font-size:14px;
+    padding:12px 22px;border-radius:6px;
+    text-decoration:none;
+    box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 12px 28px -14px rgba(105,250,233,.65);
+    transition:transform .12s,box-shadow .18s;
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 18px 34px -14px rgba(105,250,233,.75)}
+  .btn-ghost{
+    display:inline-flex;align-items:center;gap:8px;
+    border:1px solid var(--hair-2);color:var(--ink);
+    font-size:14px;padding:12px 20px;border-radius:6px;text-decoration:none;
+    background:var(--s1);
+    transition:border-color .15s,background .15s;
+  }
+  .btn-ghost:hover{border-color:rgba(105,250,233,.45);background:var(--s2)}
+
+  .trust{
+    display:flex;gap:26px;flex-wrap:wrap;margin-top:44px;
+    padding-top:22px;border-top:1px solid var(--hair);
+  }
+  .trust span{
+    font:500 11px/1 var(--mono);letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink-3);
+  }
+  .trust b{color:var(--ink-2);font-weight:500}
+
+  /* ---------- instrument panel (not a card) ---------- */
+  .panel{
+    background:linear-gradient(180deg,var(--s2),var(--s1));
+    border:1px solid var(--hair);
+    border-left:2px solid var(--aqua);
+    border-radius:6px;
+    overflow:hidden;
+    /* the one shadow direction: the object sits ABOVE the page */
+    box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 28px 56px -30px rgba(0,0,0,.95);
+  }
+  .panel-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:13px 18px;border-bottom:1px solid var(--hair);
+    background:rgba(255,255,255,.018);
+  }
+  .panel-head .t{font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--aqua);box-shadow:0 0 8px rgba(105,250,233,.8)}
+
+  .row{
+    display:grid;grid-template-columns:1fr auto;
+    gap:16px;align-items:center;
+    padding:15px 18px;border-bottom:1px solid var(--hair);
+    font-size:13.5px;
+  }
+  .row:last-child{border-bottom:none}
+  .row .k{font:500 12px/1 var(--mono);color:var(--ink-3);letter-spacing:.05em}
+  .row .v{font:500 13px/1 var(--mono);color:var(--aqua)}
+  .row .v.ok{color:var(--aqua)}
+  .row .name{color:var(--ink);font-weight:500}
+
+  /* ---------- three surfaces: TABLE, not cards ---------- */
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  thead th{
+    text-align:left;font:500 10.5px/1 var(--mono);
+    letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-3);padding:0 0 12px;
+    border-bottom:1px solid var(--hair-2);
+  }
+  tbody td{
+    padding:26px 18px 26px 0;vertical-align:top;
+    border-bottom:1px solid var(--hair);
+  }
+  tbody td:first-child{
+    width:56px;font:500 12px/1 var(--mono);color:var(--aqua);opacity:.75;
+    padding-top:29px;
+  }
+  tbody td.t-name{width:190px}
+  tbody tr:hover td{background:rgba(105,250,233,.022)}
+  td .go{
+    color:var(--aqua);text-decoration:none;font-size:13px;
+    display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+    border-bottom:1px solid rgba(105,250,233,.3);padding-bottom:2px;
+  }
+  td .go:hover{border-bottom-color:var(--aqua)}
+
+  /* ---------- big numbers instead of tiny stat cards ---------- */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--hair)}
+  .stat{padding:30px 0 30px 26px;border-left:1px solid var(--hair)}
+  .stat:first-child{border-left:none;padding-left:0}
+  .stat .n{
+    font:600 clamp(34px,4.6vw,52px)/1 var(--mono);
+    letter-spacing:-.03em;color:var(--ink);
+  }
+  .stat .n small{font-size:.42em;color:var(--ink-3);margin-left:5px;letter-spacing:0}
+  .stat .l{
+    font:500 10.5px/1.5 var(--mono);letter-spacing:.15em;
+    text-transform:uppercase;color:var(--ink-3);margin-top:11px;
+  }
+
+  /* ---------- prose block ---------- */
+  .two{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:start}
+  .side{
+    background:var(--s1);border:1px solid var(--hair);
+    border-radius:6px;padding:22px 22px 20px;
+    box-shadow:0 1px 0 rgba(255,255,255,.04) inset;
+  }
+  .side h4{
+    font:500 10.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;
+    color:var(--aqua-dim);margin-bottom:14px;
+  }
+  .side ul{list-style:none;display:flex;flex-direction:column;gap:11px}
+  .side li{
+    font-size:13.5px;color:var(--ink-2);
+    padding-left:16px;position:relative;line-height:1.5;
+  }
+  .side li::before{
+    content:"";position:absolute;left:0;top:7px;
+    width:5px;height:5px;background:var(--aqua);border-radius:1px;
+  }
+
+  footer{border-top:1px solid var(--hair);padding:44px 0 60px;margin-top:20px}
+  footer .f{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+  footer small{font:500 11px/1 var(--mono);letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
+
+  @media(max-width:860px){
+    .sec{grid-template-columns:1fr;gap:0;padding:64px 0}
+    .num{padding-bottom:16px}
+    .two{grid-template-columns:1fr;gap:32px}
+    table,tbody td{display:block}
+    thead{display:none}
+    tbody tr{display:block;border-bottom:1px solid var(--hair);padding:22px 0}
+    tbody td{border:none;padding:0 0 10px}
+    tbody td:first-child{padding:0 0 6px}
+    .stats{grid-template-columns:1fr}
+    .stat{border-left:none;padding:22px 0;border-top:1px solid var(--hair)}
+    nav{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <div class="brand"><img src="logo-mark.png" alt="">ElyShield</div>
+    <nav>
+      <a href="#">Agents</a><a href="#">MCP</a><a href="#">Verify</a><a href="#">Docs</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero sec" style="border-top:none">
+    <div class="num">01</div>
+    <div class="body">
+      <div class="kicker">Post-quantum · Elysium mainnet</div>
+      <h1>Seal a file today that only opens if <em>both curves</em> fall.</h1>
+      <p class="lede">Hybrid ML-KEM-768 and X25519 on top of each other, signed with ML-DSA-65. Runs in your browser. Nothing is uploaded, because there is nothing to upload to.</p>
+      <div class="cta">
+        <a class="btn" href="#">Seal a file</a>
+        <a class="btn-ghost" href="#">Use it from an agent</a>
+      </div>
+      <div class="trust">
+        <span><b>FIPS 203</b> ML-KEM</span>
+        <span><b>FIPS 204</b> ML-DSA</span>
+        <span><b>AES-256</b> GCM</span>
+        <span><b>0</b> server calls</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANEL -->
+  <section class="sec">
+    <div class="num">02</div>
+    <div class="body">
+      <div class="kicker">The envelope</div>
+      <h2>A file goes in. An unopenable envelope comes out.</h2>
+      <p class="lede">Five primitives, applied in order. A copy taken today needs every one of them broken to open — not just the weakest.</p>
+
+      <div class="panel" style="margin-top:34px">
+        <div class="panel-head">
+          <span class="t">envelope.elyshield</span>
+          <span class="dot"></span>
+        </div>
+        <div class="row"><span class="name">ML-KEM-768</span><span class="v">1 088 B</span></div>
+        <div class="row"><span class="name">X25519</span><span class="v">32 B</span></div>
+        <div class="row"><span class="name">HKDF-SHA256</span><span class="v ok">combined</span></div>
+        <div class="row"><span class="name">AES-256-GCM</span><span class="v">payload + filename</span></div>
+        <div class="row"><span class="name">ML-DSA-65</span><span class="v">3 309 B</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABLE -->
+  <section class="sec">
+    <div class="num">03</div>
+    <div class="body">
+      <div class="kicker">Three surfaces</div>
+      <h2>Humans drop files. Agents call tools. Receipts get signed.</h2>
+      <p class="lede" style="margin-bottom:36px">One envelope format, three ways in. No backend sees plaintext on any of them.</p>
+
+      <table>
+        <thead>
+          <tr><th></th><th>Surface</th><th>What it does</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>01</td>
+            <td class="t-name"><h3>Humans</h3></td>
+            <td>Drop a file into the agent or the form, say what you want, get a sealed envelope or the opened file back.</td>
+            <td><a class="go" href="#">Open the agent →</a></td>
+          </tr>
+          <tr>
+            <td>02</td>
+            <td class="t-name"><h3>Agents · MCP</h3></td>
+            <td>Six tools over stdio. Call <span style="font-family:var(--mono);font-size:12.5px;color:var(--aqua)">elyshield_encrypt_file</span> from Claude or Cursor. Same crypto, no browser.</td>
+            <td><a class="go" href="#">Meet the server →</a></td>
+          </tr>
+          <tr>
+            <td>03</td>
+            <td class="t-name"><h3>Payments · x402</h3></td>
+            <td>Agents sign payment payloads with ML-DSA-65 under their own context, so a verifier can tell which key signed.</td>
+            <td><a class="go" href="#">Inspect x402 →</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- BIG NUMBERS -->
+  <section class="sec">
+    <div class="num">04</div>
+    <div class="body">
+      <div class="kicker">Limits</div>
+      <h2 style="margin-bottom:8px">One plan. No token, no tier, no account.</h2>
+      <p class="lede" style="margin-bottom:30px">Every wallet and every key file gets the same ceiling from the first second.</p>
+      <div class="stats">
+        <div class="stat"><div class="n">25<small>/24h</small></div><div class="l">Encryptions</div></div>
+        <div class="stat"><div class="n">100<small>MB</small></div><div class="l">Max file size</div></div>
+        <div class="stat"><div class="n">0<small>servers</small></div><div class="l">Plaintext exposure</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TWO COLUMN -->
+  <section class="sec">
+    <div class="num">05</div>
+    <div class="body">
+      <div class="two">
+        <div>
+          <div class="kicker">Why now</div>
+          <h2>Coins can run. Data can't.</h2>
+          <p class="lede">Crypto is planning for bunker mode: move coins to fresh addresses in case curves fall early. A coin can run. A file can't — anything sealed with curves alone can be copied today and opened the day those curves break.</p>
+          <div class="cta" style="margin-top:28px">
+            <a class="btn" href="#">Seal a file</a>
+          </div>
+        </div>
+        <div class="side">
+          <h4>The whole promise</h4>
+          <ul>
+            <li>No server holds your keys, so no server can leak them.</li>
+            <li>Filenames travel sealed inside the payload.</li>
+            <li>Seals verify offline, without this site.</li>
+            <li>Lose both key file and passphrase, and it is gone. That is the point.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="f">
+      <div class="brand" style="font-size:14px"><img src="logo-mark.png" alt="" style="width:20px;height:20px">ElyShield</div>
+      <small>Elyshield.xyz · built for Elysium</small>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>

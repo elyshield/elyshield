@@ -3,13 +3,13 @@ import { DocsLayout, DocTitle, DocH2, DocP } from '@/components/layout-docs';
 import { Reveal } from '@/components/reveal';
 
 export const metadata: Metadata = {
-  title: 'Roadmap | ArShield Docs',
-  description: 'What ships in ArShield today, and what is next. The honest plan, with no dates.',
+  title: 'Roadmap | ElyShield Docs',
+  description: 'What ships in ElyShield today, and what is next. The honest plan, with no dates.',
 };
 
 const SHIPPED = [
   'Hybrid post-quantum encryption in the browser (ML-KEM-768 + X25519 KEM, ML-DSA-65 signatures, AES-256-GCM)',
-  'The .arshield envelope container',
+  'The .elyshield envelope container',
   'Quantum Seal PNG export with embedded tEXt-chunk metadata',
   'Local Seal verification by dropping a PNG',
   'Wallet-derived identity from a single signing message',
@@ -20,10 +20,10 @@ const SHIPPED = [
 
 const NEXT = [
   { title: 'Multi-recipient envelopes', body: 'One payload, several authorised wallet addresses.' },
-  { title: 'On-chain attestations', body: 'Optionally anchor a Seal hash on ARC.' },
+  { title: 'On-chain attestations', body: 'Optionally anchor a Seal hash on Elysium.' },
   { title: 'Team workspaces', body: 'Shared key material for a group, with no server custody.' },
   { title: 'Hardware-key identity', body: 'Derive identity from a hardware wallet or FIDO2 key.' },
-  { title: '$arshield tier thresholds', body: 'Published capacity limits, decided with the token launch.' },
+  { title: 'Larger local limits', body: 'Higher daily caps and bigger files, once the browser path can carry them.' },
   { title: 'Independent audit', body: 'A third-party review of the crypto core and the browser implementation.' },
 ];
 

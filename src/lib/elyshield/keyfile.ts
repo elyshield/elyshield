@@ -3,7 +3,7 @@ import { randomBytes } from '@noble/hashes/utils';
 import { aeadDecrypt, aeadEncrypt } from './aead';
 import * as constants from './constants';
 import { InvalidPassphraseError } from './types';
-import type { ArShieldKeyPair, ArShieldKeyfile } from './types';
+import type { ElyShieldKeyPair, ElyShieldKeyfile } from './types';
 
 const utf8Encoder = new TextEncoder();
 const utf8Decoder = new TextDecoder();
@@ -22,7 +22,7 @@ const b64 = {
   },
 };
 
-function serializeKeypair(kp: ArShieldKeyPair): Uint8Array {
+function serializeKeypair(kp: ElyShieldKeyPair): Uint8Array {
   return utf8Encoder.encode(
     JSON.stringify({
       pk: {
@@ -39,7 +39,7 @@ function serializeKeypair(kp: ArShieldKeyPair): Uint8Array {
   );
 }
 
-function deserializeKeypair(bytes: Uint8Array): ArShieldKeyPair {
+function deserializeKeypair(bytes: Uint8Array): ElyShieldKeyPair {
   const obj = JSON.parse(utf8Decoder.decode(bytes));
   return {
     publicKey: {
@@ -76,10 +76,11 @@ async function deriveWrapKey(
       m: params.m,
       p: params.p,
       dkLen: 32,
-      // The worker's HKDF info must match what this side always used, so the
-      // derived key is byte-identical to the pre-worker implementation. An
-      // existing key file has to keep opening.
+      // The worker's HKDF salt AND info must match the core package exactly, or
+      // a keyfile written here cannot be opened by the MCP server. The salt was
+      // missing before; keeping both in one place is what stops it drifting again.
       info: constants.HKDF_INFO_KEYFILE_WRAP,
+      hkdfSalt: constants.HKDF_SALT,
     },
     onProgress,
   );
@@ -88,11 +89,11 @@ async function deriveWrapKey(
 
 /** Wrap a keypair under a passphrase (Argon2id + AES-256-GCM) into a portable keyfile. */
 export async function wrapKeyfile(
-  kp: ArShieldKeyPair,
+  kp: ElyShieldKeyPair,
   passphrase: string,
   params: { t: number; m: number; p: number } = constants.ARGON2ID_PARAMS_PROD,
   onProgress?: (fraction: number) => void,
-): Promise<ArShieldKeyfile> {
+): Promise<ElyShieldKeyfile> {
   if (!passphrase || passphrase.length === 0) {
     throw new Error('Passphrase must be non-empty');
   }
@@ -117,10 +118,10 @@ export async function wrapKeyfile(
 
 /** Open a keyfile with its passphrase. Wrong passphrase -> InvalidPassphraseError. */
 export async function unwrapKeyfile(
-  kf: ArShieldKeyfile,
+  kf: ElyShieldKeyfile,
   passphrase: string,
   onProgress?: (fraction: number) => void,
-): Promise<ArShieldKeyPair> {
+): Promise<ElyShieldKeyPair> {
   if (kf.v !== 1) {
     throw new Error(`Unsupported keyfile version ${kf.v}`);
   }

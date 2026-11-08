@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { AlertTriangle, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/button';
 import { Background } from '@/components/background';
+import { BackgroundOrbit } from '@/components/background-orbit';
 import { Logo } from '@/components/header';
 
 /**
@@ -27,12 +28,13 @@ export default function Error({
   useEffect(() => {
     // Vercel/CF logs are not available client-side; the console is the only
     // place this surfaces in a static export.
-    console.error('[arshield] render error', error);
+    console.error('[elyshield] render error', error);
   }, [error]);
 
   return (
     <>
       <Background />
+      <BackgroundOrbit subtle />
       <div className="relative flex min-h-screen items-center justify-center px-4">
         <div className="as-dialog-in w-full max-w-lg">
           <div className="mb-8 flex justify-center">

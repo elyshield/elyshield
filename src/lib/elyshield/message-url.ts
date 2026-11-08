@@ -1,16 +1,16 @@
 import * as constants from './constants';
-import type { ArShieldPublicKey, ArShieldSecretKey } from './types';
+import type { ElyShieldPublicKey, ElyShieldSecretKey } from './types';
 
 /**
  * Shareable encrypted message URLs. The ciphertext lives in the URL #fragment, which
  * browsers never send to a server — so the host serves only a static page.
  *
- *   https://arc-shield.xyz/m/#v1.<blob>.<signerPublic>
+ *   https://elyshield.xyz/m/#v1.<blob>.<signerPublic>
  *
  * When the sender used an ephemeral identity, the secret key is embedded so the
  * recipient can decrypt without any prior setup:
  *
- *   https://arc-shield.xyz/m/#v1.<blob>.<signerPublic>.<embedSk>.<embedPk>
+ *   https://elyshield.xyz/m/#v1.<blob>.<signerPublic>.<embedSk>.<embedPk>
  */
 
 function b64urlEncode(bytes: Uint8Array): string {
@@ -83,23 +83,23 @@ function decodeKey(
 
 export type ParsedMessageUrl = {
   blob: Uint8Array;
-  signerPublic: ArShieldPublicKey;
-  ephemeralSecret?: ArShieldSecretKey;
-  ephemeralPublic?: ArShieldPublicKey;
+  signerPublic: ElyShieldPublicKey;
+  ephemeralSecret?: ElyShieldSecretKey;
+  ephemeralPublic?: ElyShieldPublicKey;
 };
 
 export function buildMessageUrl(
   blob: Uint8Array,
-  signerPublic: ArShieldPublicKey,
-  embed?: { sk: ArShieldSecretKey; pk: ArShieldPublicKey },
+  signerPublic: ElyShieldPublicKey,
+  embed?: { sk: ElyShieldSecretKey; pk: ElyShieldPublicKey },
 ): string {
   const parts = [
     constants.MESSAGE_URL_PREFIX + b64urlEncode(blob),
-    encodeKey(signerPublic as unknown as KeyShape<ArShieldPublicKey>),
+    encodeKey(signerPublic as unknown as KeyShape<ElyShieldPublicKey>),
   ];
   if (embed) {
-    parts.push(encodeKey(embed.sk as unknown as KeyShape<ArShieldSecretKey>));
-    parts.push(encodeKey(embed.pk as unknown as KeyShape<ArShieldPublicKey>));
+    parts.push(encodeKey(embed.sk as unknown as KeyShape<ElyShieldSecretKey>));
+    parts.push(encodeKey(embed.pk as unknown as KeyShape<ElyShieldPublicKey>));
   }
   return constants.MESSAGE_URL_BASE + parts.join('.');
 }
@@ -117,12 +117,12 @@ export function parseMessageUrl(url: string): ParsedMessageUrl {
     throw new Error('Malformed message URL');
   }
   const blob = b64urlDecode(segs[0], 'envelope');
-  const signerPublic = decodeKey(segs[1], 'signer key', PUBLIC_KEY_LENGTHS) as unknown as ArShieldPublicKey;
+  const signerPublic = decodeKey(segs[1], 'signer key', PUBLIC_KEY_LENGTHS) as unknown as ElyShieldPublicKey;
   if (segs.length === 2) {
     return { blob, signerPublic };
   }
-  const ephemeralSecret = decodeKey(segs[2], 'embedded secret key', SECRET_KEY_LENGTHS) as unknown as ArShieldSecretKey;
-  const ephemeralPublic = decodeKey(segs[3], 'embedded public key', PUBLIC_KEY_LENGTHS) as unknown as ArShieldPublicKey;
+  const ephemeralSecret = decodeKey(segs[2], 'embedded secret key', SECRET_KEY_LENGTHS) as unknown as ElyShieldSecretKey;
+  const ephemeralPublic = decodeKey(segs[3], 'embedded public key', PUBLIC_KEY_LENGTHS) as unknown as ElyShieldPublicKey;
   return { blob, signerPublic, ephemeralSecret, ephemeralPublic };
 }
 
@@ -132,15 +132,15 @@ export { b64urlEncode, b64urlDecode };
  * Serialize a public key into the shareable form ("Copy my public key").
  * base64url of JSON { mlkem, x25519, mldsa } — same shape encodeKey uses.
  */
-export function encodePublicKey(pk: ArShieldPublicKey): string {
-  return encodeKey(pk as unknown as KeyShape<ArShieldPublicKey>);
+export function encodePublicKey(pk: ElyShieldPublicKey): string {
+  return encodeKey(pk as unknown as KeyShape<ElyShieldPublicKey>);
 }
 
 /**
  * Parse a public key from its base64url JSON form. Throws if the shape or
  * any key length is wrong. Used to encrypt a message to a specific recipient.
  */
-export function parsePublicKey(s: string): ArShieldPublicKey {
+export function parsePublicKey(s: string): ElyShieldPublicKey {
   const out = decodeKey(s, 'recipient public key', PUBLIC_KEY_LENGTHS);
-  return out as unknown as ArShieldPublicKey;
+  return out as unknown as ElyShieldPublicKey;
 }

@@ -13,7 +13,7 @@ export const dynamic = 'force-static';
  * shared link would put a (useless to it, but still) recipient-specific URL into
  * search results, and the person who shared it did not intend that.
  */
-const SITE_URL = 'https://arshield.pages.dev';
+const SITE_URL = 'https://elyshield.pages.dev';
 
 export default function robots(): MetadataRoute.Robots {
   return {

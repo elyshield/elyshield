@@ -77,7 +77,7 @@ export function FileReportCard({
 
   const wash =
     report.kind === 'container'
-      ? 'linear-gradient(180deg, rgba(209,164,19,0.07), rgba(209,164,19,0.015)), var(--color-card)'
+      ? 'linear-gradient(180deg, rgba(105, 250, 233,0.07), rgba(105, 250, 233,0.015)), var(--color-card)'
       : report.kind === 'plain'
         ? 'var(--color-card)'
         : 'linear-gradient(180deg, rgba(74,222,155,0.06), rgba(74,222,155,0.015)), var(--color-card)';
@@ -95,7 +95,7 @@ export function FileReportCard({
           <p className="truncate text-[13.5px] font-medium text-[#eef1f6]" title={report.name}>
             {report.name}
           </p>
-          <p className="font-mono text-[10.5px] uppercase tracking-[0.1em] text-[#8a93a3]">
+          <p className="font-mono text-[10.5px] font-medium text-[#8a93a3]">
             {kindLabel}
           </p>
         </div>
@@ -147,7 +147,7 @@ export function FileReportCard({
           </Button>
           <span className="text-[11.5px] text-[#8a93a3]">
             {report.action === 'encrypt'
-              ? 'seals it into a .arshield container'
+              ? 'seals it into a .elyshield container'
               : 'verifies the signature, then decrypts'}
           </span>
         </div>
@@ -333,7 +333,7 @@ export function FileChip({
   busy?: boolean;
 }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[13px] text-[#dfe3ea]">
+    <div className="inline-flex items-center gap-2 rounded-[3px] border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[13px] text-[#dfe3ea]">
       <FileText className="h-3.5 w-3.5 text-[var(--color-idle)]" />
       <span className="max-w-[220px] truncate">{name}</span>
       <span className="text-[var(--color-idle)]">{formatBytes(size)}</span>
@@ -379,7 +379,7 @@ export function ResultCard({
   const wash =
     tone === 'verified'
       ? 'linear-gradient(180deg, rgba(74,222,155,0.07), rgba(74,222,155,0.02)), var(--color-card)'
-      : 'linear-gradient(180deg, rgba(240,161,58,0.07), rgba(240,161,58,0.02)), var(--color-card)';
+      : 'linear-gradient(180deg, rgba(45, 217, 209,0.07), rgba(45, 217, 209,0.02)), var(--color-card)';
 
   return (
     <div

@@ -2,18 +2,18 @@ import * as constants from './constants.js';
 import { deriveSeedsFromRandomness, deriveSeedsFromWalletSignature, assertEoaSignatureShape } from './kdf.js';
 import { keysFromSeeds } from './keys.js';
 import { sign, verify } from './crypto.js';
-import type { ArShieldKeyPair } from './types.js';
+import type { ElyShieldKeyPair } from './types.js';
 
 /** Convenience helpers that tie seed derivation + keygen + sign/verify together. */
 
 /** Build a full identity from an EIP-191 wallet signature. */
-export function identityFromWalletSignature(signatureHex: string): ArShieldKeyPair {
+export function identityFromWalletSignature(signatureHex: string): ElyShieldKeyPair {
   assertEoaSignatureShape(signatureHex);
   return keysFromSeeds(deriveSeedsFromWalletSignature(signatureHex));
 }
 
 /** Build a fresh ephemeral identity from CSPRNG. */
-export function ephemeralIdentity(): ArShieldKeyPair {
+export function ephemeralIdentity(): ElyShieldKeyPair {
   return keysFromSeeds(deriveSeedsFromRandomness());
 }
 
@@ -27,4 +27,4 @@ export function verifyX402(publicKey: Uint8Array, payload: Uint8Array, signature
   return verify(publicKey, payload, signature, constants.X402_CONTEXT);
 }
 
-export { ARSHIELD_DERIVATION_MESSAGE } from './constants.js';
+export { ELYSHIELD_DERIVATION_MESSAGE } from './constants.js';

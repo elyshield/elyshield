@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 /**
  * Quantum Seal drop zone.
  * Drag-and-drop or click to pick a Seal PNG, inspect its unsigned metadata fields,
- * and optionally cross-check the SHA-256 of a companion .arshield envelope.
+ * and optionally cross-check the SHA-256 of a companion .elyshield envelope.
  *
  * Read-only: everything happens locally in the browser via FileReader.
  */
@@ -55,10 +55,10 @@ async function sha256Hex(bytes: ArrayBuffer): Promise<string> {
 }
 
 function readPngMetadata(bytes: ArrayBuffer): SealMetadata {
-  // Parse PNG tEXt / iTXt chunks for the arshield keys we care about.
+  // Parse PNG tEXt / iTXt chunks for the elyshield keys we care about.
   //
   // Two shapes exist in the wild and both must read:
-  //  1) one JSON blob under the keyword "arshield-seal" (what /app writes)
+  //  1) one JSON blob under the keyword "elyshield-seal" (what /app writes)
   //  2) one keyword per field: version, file_hash, ... (hand-authored seals)
   const view = new DataView(bytes);
   const meta: SealMetadata = {};
@@ -87,9 +87,9 @@ function readPngMetadata(bytes: ArrayBuffer): SealMetadata {
         const key = raw.slice(0, sep).replace(/\0/g, '').trim();
         const value = raw.slice(sep + 1).replace(/\u0000/g, '').trim();
 
-        // Shape 1: a single JSON payload under an arshield keyword.
-        // /app writes "arshield"; accept the explicit variants too.
-        if (key === 'arshield' || key === 'arshield-seal' || key === 'arshield_seal') {
+        // Shape 1: a single JSON payload under an elyshield keyword.
+        // /app writes "elyshield"; accept the explicit variants too.
+        if (key === 'elyshield' || key === 'elyshield-seal' || key === 'elyshield_seal') {
           try {
             const obj = JSON.parse(value) as Record<string, unknown>;
             for (const k of Object.keys(obj)) {
@@ -238,7 +238,7 @@ export function SealDropzone({ className }: { className?: string }) {
                   <span className="text-[14px] font-semibold text-[#e6e9ef]">{result.fileName}</span>
                   <span
                     className={cn(
-                      'rounded-full border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider',
+                      'rounded-[3px] border px-1.5 py-0.5 text-[9px] font-medium',
                       result.valid
                         ? 'border-emerald-400/30 text-emerald-300'
                         : 'border-amber-400/30 text-amber-300',
@@ -274,7 +274,7 @@ export function SealDropzone({ className }: { className?: string }) {
               { label: 'SHA-256', value: result.sha256 ? result.sha256 : '—' },
             ].map((row) => (
               <div key={row.label} className="bg-[#060c18] px-4 py-3.5">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5b6474]">
+                <div className="text-[10px] font-medium text-[#77839a]">
                   {row.label}
                 </div>
                 <div className="mt-1 break-all font-mono text-[11.5px] text-[#e6e9ef]">{row.value}</div>
@@ -296,8 +296,8 @@ export function SealDropzone({ className }: { className?: string }) {
           {result.valid && result.metadata.file_hash && (
             <p className="mt-5 flex items-start gap-2 text-[12.5px] leading-relaxed text-emerald-300/90">
               <CheckCircle2 className="mt-0.5 h-4 w-4 flex-none" />
-              To confirm integrity, compare this file_hash against the SHA-256 of the matching .arshield
-              envelope. You can do that here in the browser or with arshield_verify_seal from your agent.
+              To confirm integrity, compare this file_hash against the SHA-256 of the matching .elyshield
+              envelope. You can do that here in the browser or with elyshield_verify_seal from your agent.
             </p>
           )}
         </div>
@@ -306,15 +306,15 @@ export function SealDropzone({ className }: { className?: string }) {
       <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12.5px]">
         <Link
           href="/mcp"
-          className="inline-flex items-center gap-1.5 text-brand-gold transition-colors hover:text-[#e9c35f]"
+          className="inline-flex items-center gap-1.5 text-brand-gold transition-colors hover:text-[#b3fdf4]"
         >
           Verify from your agent
           <ArrowUpRight className="h-3.5 w-3.5" />
         </Link>
-        <Link href="/app" className="text-[#5b6474] transition-colors hover:text-[#9aa3b2]">
+        <Link href="/app" className="text-[#77839a] transition-colors hover:text-[#9aa3b2]">
           Create a Seal in the app
         </Link>
-        <span className="inline-flex items-center gap-1.5 text-[#5b6474]">
+        <span className="inline-flex items-center gap-1.5 text-[#77839a]">
           <ShieldCheck className="h-3.5 w-3.5" />
           Local only · no upload
         </span>

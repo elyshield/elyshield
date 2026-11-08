@@ -29,7 +29,7 @@ export type KdfResult = { wrapKey: Uint8Array; usedWorker: boolean };
 export function argon2WrapKey(
   passphrase: string,
   salt: Uint8Array,
-  opts: { t: number; m: number; p: number; dkLen: number; info: string },
+  opts: { t: number; m: number; p: number; dkLen: number; info: string; hkdfSalt: string },
   onProgress?: Progress,
 ): Promise<KdfResult> {
   const w = getWorker();
@@ -94,7 +94,7 @@ export function argon2WrapKey(
 async function fallback(
   passphrase: string,
   salt: Uint8Array,
-  opts: { t: number; m: number; p: number; dkLen: number; info: string },
+  opts: { t: number; m: number; p: number; dkLen: number; info: string; hkdfSalt: string },
   onProgress?: Progress,
 ): Promise<KdfResult> {
   const { argon2id } = await import('@noble/hashes/argon2');
@@ -104,7 +104,13 @@ async function fallback(
   await new Promise((r) => setTimeout(r, 0));
   onProgress?.(0.5);
   const out = argon2id(new TextEncoder().encode(passphrase), salt, opts);
-  const wrapKey = hkdf(sha256, out, undefined, new TextEncoder().encode(opts.info), 32);
+  const wrapKey = hkdf(
+    sha256,
+    out,
+    new TextEncoder().encode(opts.hkdfSalt),
+    new TextEncoder().encode(opts.info),
+    32,
+  );
   onProgress?.(1);
   return { wrapKey, usedWorker: false };
 }

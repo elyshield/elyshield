@@ -20,8 +20,8 @@ import {
   encryptFile,
   decryptFile,
   buildMessageUrl,
-  type ArShieldKeyPair,
-} from '@/lib/arshield';
+  type ElyShieldKeyPair,
+} from '@/lib/elyshield';
 import {
   canEncrypt,
   encryptionsLeft,
@@ -50,13 +50,10 @@ export function AppWorkspace({
   source,
   onReset,
   tier,
-  holdings,
 }: {
-  source: { kind: 'wallet' | 'keyfile'; label: string; kp: ArShieldKeyPair };
+  source: { kind: 'wallet' | 'keyfile'; label: string; kp: ElyShieldKeyPair };
   onReset: () => void;
   tier: Tier;
-  /** Token holding behind the tier, when it could be read. */
-  holdings?: { balance: number; usd: number; priceSource: 'live' | 'fallback' | 'none' } | null;
 }) {
   const [file, setFile] = useState<{ name: string; bytes: Uint8Array } | null>(null);
   const [mode, setMode] = useState<'wait' | 'encrypt' | 'decrypt'>('wait');
@@ -99,7 +96,7 @@ export function AppWorkspace({
       setStatus(null);
       setStep(0);
       setShowSteps(false);
-      const isDecrypt = f.name.endsWith('.arshield');
+      const isDecrypt = f.name.endsWith('.elyshield');
       setMode(isDecrypt ? 'decrypt' : 'encrypt');
       if (!isDecrypt && bytes.length > tier.maxFileBytes) {
         // Hard refuse: file above this tier's cap cannot be encrypted.
@@ -171,7 +168,7 @@ export function AppWorkspace({
       // display budget after the real work.
       await playSteps(setStep, 5, cryptoMs);
 
-      setResult({ name: file.name + '.arshield', bytes: container, seal, hash });
+      setResult({ name: file.name + '.elyshield', bytes: container, seal, hash });
       flashDone();
       const left = encryptionsLeft(tier);
       setStatus(`Quantum-Sealed · Ready to download · ${left === 'unlimited' ? 'unlimited' : left + ' left'} today`);
@@ -221,14 +218,13 @@ export function AppWorkspace({
       <div className="relative min-h-screen">
         <header className="border-b border-white/[0.06] bg-[#020610]/70 backdrop-blur-xl">
           <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 sm:px-6">
-            <Link href="/" aria-label="ArShield home"><Logo /></Link>
+            <Link href="/" aria-label="ElyShield home"><Logo /></Link>
             {/* One control, not three chips. See account-pill.tsx for why the
                 previous row of separate pills read as generated. */}
             <AccountPill
               tier={tier}
               sourceLabel={source.label}
               address={source.kind === 'wallet' ? source.label.split('· ')[1] : undefined}
-              holdings={holdings}
               onChangeKey={onReset}
             />
           </div>
@@ -262,7 +258,7 @@ export function AppWorkspace({
                     setShowSteps(false);
                   }}
                   className={[
-                    'rounded-full px-5 py-2 text-[14.5px] font-medium transition-colors',
+                    'rounded-[3px] px-5 py-2 text-[14.5px] font-medium transition-colors',
                     active
                       ? 'bg-[#020610] text-[#eef1f6] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]'
                       : 'text-[#9ba4b3] hover:text-[#d6dbe5]',
@@ -286,7 +282,7 @@ export function AppWorkspace({
           >
             {/* header strip: what this card is for, and the current mode */}
             <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-4">
-              <span className="font-mono text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[#8b94a4]">
+              <span className="font-mono text-[11.5px] font-medium text-[#8b94a4]">
                 {mode === 'decrypt' ? 'Open an envelope' : 'Seal a file'}
               </span>
               <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#8b94a4]">
@@ -376,7 +372,7 @@ export function AppWorkspace({
                     <div className="flex items-baseline justify-between gap-4">
                       <dt className="flex-none text-[13px] font-medium text-[#9ba4b3]">Output</dt>
                       <dd className="text-right text-[13.5px] text-[#bcc4d0]">
-                        {mode === 'decrypt' ? 'your original file' : 'a .arshield container'}
+                        {mode === 'decrypt' ? 'your original file' : 'a .elyshield container'}
                       </dd>
                     </div>
                     <div className="flex items-baseline justify-between gap-4">
@@ -393,7 +389,7 @@ export function AppWorkspace({
                     <Upload className="h-6 w-6" />
                   </span>
                   <div className="mt-3 text-[15.5px] font-medium text-[#eef1f6]">
-                    {mode === 'decrypt' ? 'Drop a .arshield file' : 'Drop a file to seal'}
+                    {mode === 'decrypt' ? 'Drop a .elyshield file' : 'Drop a file to seal'}
                   </div>
                   <div className="mt-1 text-[13.5px] font-medium text-[#949dac]">
                     or <span className="text-[var(--color-action)]/80">browse</span>
@@ -460,7 +456,7 @@ export function AppWorkspace({
                   </button>
                 </div>
                 {!canEncrypt(tier) && (
-                  <p className="mt-2.5 text-center text-[13px] text-[#e5a23c]">
+                  <p className="mt-2.5 text-center text-[13px] text-[#2dd9d1]">
                     Daily limit reached on {tier.name}. Resets at 00:00 UTC.
                   </p>
                 )}
@@ -547,12 +543,12 @@ export function AppWorkspace({
               <div className="flex flex-wrap gap-2">
                 <DownloadButton
                   onDownload={() => download(result.bytes, result.name)}
-                  label={result.seal ? 'Download .arshield' : 'Download file'}
+                  label={result.seal ? 'Download .elyshield' : 'Download file'}
                   doneLabel="Saved"
                 />
                 {result.seal && (
                   <DownloadButton
-                    onDownload={() => download(result.seal!, result.name.replace(/\.arshield$/, '') + '.seal.png', 'image/png')}
+                    onDownload={() => download(result.seal!, result.name.replace(/\.elyshield$/, '') + '.seal.png', 'image/png')}
                     label="Download Seal"
                     doneLabel="Saved"
                   />
@@ -564,7 +560,7 @@ export function AppWorkspace({
               {result.hash && (
                 <div className="mt-4">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[#8b94a4]">
+                    <span className="text-[11.5px] font-medium text-[#8b94a4]">
                       Envelope sha256
                     </span>
                     <CopyButton value={result.hash} label="Copy hash" copiedLabel="Copied" />
@@ -584,8 +580,8 @@ export function AppWorkspace({
             transition={{ duration: 0.5, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
             className="as-lift-soft as-result-glow panel mt-6 p-5"
           >
-            <div className="mb-1 text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[#8b94a4]">Compose</div>
-            <h3 className="text-[16.5px] font-semibold text-[#e6e9ef]">Share via .arshield message</h3>
+            <div className="mb-1 text-[11.5px] font-medium text-[#8b94a4]">Compose</div>
+            <h3 className="text-[16.5px] font-semibold text-[#e6e9ef]">Share via .elyshield message</h3>
             <textarea
               value={msgText}
               onChange={(e) => setMsgText(e.target.value.slice(0, 65536))}
@@ -603,7 +599,7 @@ export function AppWorkspace({
             {msgUrl && (
               <div className="mt-3 rounded-xl border border-white/[0.08] bg-[#03070f] p-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[12.5px] font-semibold uppercase tracking-wider text-brand-gold">Message URL</span>
+                  <span className="text-[12.5px] font-medium text-brand-gold">Message URL</span>
                   <button
                     onClick={() => { navigator.clipboard?.writeText(msgUrl); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
                     className="inline-flex items-center gap-1 text-[12.5px] text-[#aab3c1] hover:text-brand-gold"

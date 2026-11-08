@@ -44,7 +44,7 @@ const NODES = [
   },
   {
     tag: 'OUTPUT',
-    title: '.arshield',
+    title: '.elyshield',
     body: 'One portable container. Opens anywhere with your wallet or key file.',
     detail: 'stored on your device',
     tone: 'verified' as const,
@@ -84,7 +84,7 @@ export function ProtocolDiagram() {
                   <span className={'grid h-6 w-6 flex-none place-items-center rounded-full border font-mono text-[10px] font-semibold ' + t.badge}>
                     {i + 1}
                   </span>
-                  <span className="truncate font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#5b6474]">
+                  <span className="truncate font-mono text-[10px] font-medium text-[#77839a]">
                     {n.tag}
                   </span>
                 </div>
@@ -103,7 +103,7 @@ export function ProtocolDiagram() {
       </div>
 
       <Reveal delay={0.5}>
-        <p className="mt-8 text-center font-mono text-[11px] leading-relaxed tracking-wide text-[#5b6474]">
+        <p className="mt-8 text-center font-mono text-[11px] leading-relaxed tracking-wide text-[#77839a]">
           an attacker must break <span className="text-[var(--color-action)]">ML-KEM-768</span> ·{' '}
           <span className="text-[var(--color-action)]">X25519</span> ·{' '}
           <span className="text-[var(--color-action)]">ML-DSA-65</span> ·{' '}

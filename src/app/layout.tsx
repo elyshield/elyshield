@@ -1,24 +1,31 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import { DepthField } from '@/components/depth-field';
 import './globals.css';
 
 /**
- * Geist ships as a variable font here, so `weight` is left unset — the file
- * carries a range and the browser picks from it. Declaring a single weight
- * would make every bold in the UI render from the same face and flatten the
- * hierarchy.
+ * IBM Plex Sans carries the site.
+ *
+ * Geist was here before and it is a fine face, but it is also the default of
+ * every Next.js-app-router scaffold — a site wearing it reads as generated
+ * before anyone has looked at the content. Plex is a technical grotesque with a
+ * slightly humanist spine: it holds up in the 11-13px labels this UI leans on,
+ * keeps real differentiation between weights, and has an engineering register
+ * that suits a cryptography product better than a neutral UI default.
  */
-const geistSans = localFont({
-  src: './fonts/geist-sans.woff2',
-  variable: '--font-geist-sans',
+const plexSans = localFont({
+  src: './fonts/plex-sans-var.woff2',
+  variable: '--font-plex-sans',
+  weight: '100 700',
   display: 'swap',
   fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
   adjustFontFallback: 'Arial',
 });
 
-const geistMono = localFont({
-  src: './fonts/geist-mono.woff2',
-  variable: '--font-geist-mono',
+const plexMono = localFont({
+  src: './fonts/plex-mono-var.woff2',
+  variable: '--font-plex-mono',
+  weight: '100 700',
   display: 'swap',
   fallback: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
 });
@@ -27,7 +34,7 @@ const geistMono = localFont({
  * Canonical origin.
  *
  * This is where the site actually lives right now. It used to point at
- * arc-shield.xyz, which is not connected yet — that made every relative URL in
+ * elyshield.xyz, which is not connected yet — that made every relative URL in
  * the metadata resolve against a domain that serves nothing, so link previews
  * on X, WhatsApp and Discord could fail to load their image. A preview that
  * silently degrades is the most visible way a site reads as unfinished, and it
@@ -36,19 +43,19 @@ const geistMono = localFont({
  * When the domain is attached, change this one value. Everything else —
  * canonical, og:url, sitemap, robots — derives from it.
  */
-const SITE_URL = 'https://arshield.pages.dev';
+const SITE_URL = 'https://elyshield.pages.dev';
 
 export const metadata: Metadata = {
-  title: 'ArShield | Post-Quantum Security Infrastructure on ARC',
+  title: 'ElyShield | Post-Quantum Security Infrastructure on Elysium',
   description:
-    'The post-quantum layer for data, messages and agents. Hybrid ML-KEM-768 + X25519 encryption, ML-DSA-65 signatures, zero backend. Built for ARC.',
+    'The post-quantum layer for data, messages and agents. Hybrid ML-KEM-768 + X25519 encryption, ML-DSA-65 signatures, zero backend. Built for Elysium.',
   metadataBase: new URL(SITE_URL),
   // Tells Google which URL is the real one. Without it, the same page reachable
   // from two hosts is treated as two pages competing with each other.
   alternates: { canonical: '/' },
-  applicationName: 'ArShield',
-  authors: [{ name: 'ArShield' }],
-  creator: 'ArShield',
+  applicationName: 'ElyShield',
+  authors: [{ name: 'ElyShield' }],
+  creator: 'ElyShield',
   keywords: [
     'post-quantum encryption',
     'ML-KEM-768',
@@ -56,8 +63,8 @@ export const metadata: Metadata = {
     'quantum-safe file encryption',
     'MCP server',
     'x402',
-    'ARC chain',
-    'ArShield',
+    'Elysium chain',
+    'ElyShield',
   ],
   // Browser chrome on mobile matches the page instead of flashing white above a
   // near-black layout.
@@ -65,17 +72,17 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'The post-quantum layer for data, messages and agents.',
     description:
-      'ArShield seals it post-quantum, on your device. Your agents too. ML-KEM-768 + X25519 hybrid, ML-DSA-65 signed, MCP-native, built for ARC.',
+      'ElyShield seals it post-quantum, on your device. Your agents too. ML-KEM-768 + X25519 hybrid, ML-DSA-65 signed, MCP-native, built for Elysium.',
     url: SITE_URL,
-    siteName: 'ArShield',
+    siteName: 'ElyShield',
     type: 'website',
-    images: [{ url: '/seo/opengraph-image.png', width: 1200, height: 630, alt: 'ArShield — post-quantum envelopes for files and agents' }],
+    images: [{ url: '/seo/opengraph-image.png', width: 1200, height: 630, alt: 'ElyShield — post-quantum envelopes for files and agents' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'The post-quantum layer for data, messages and agents.',
     description:
-      'ArShield seals it post-quantum, on your device. Your agents too. ML-KEM-768 + X25519 hybrid, ML-DSA-65 signed, MCP-native.',
+      'ElyShield seals it post-quantum, on your device. Your agents too. ML-KEM-768 + X25519 hybrid, ML-DSA-65 signed, MCP-native.',
     images: ['/seo/twitter-image.png'],
     site: '@arcshield_',
     creator: '@arcshield_',
@@ -99,7 +106,7 @@ export const metadata: Metadata = {
 const JSON_LD = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
-  name: 'ArShield',
+  name: 'ElyShield',
   applicationCategory: 'SecurityApplication',
   operatingSystem: 'Web, Linux, macOS, Windows',
   url: SITE_URL,
@@ -125,13 +132,21 @@ const JSON_LD = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans`}>
+      <body className={`${plexSans.variable} ${plexMono.variable} font-sans`}>
         <script
           type="application/ld+json"
           // Static object authored here, not user input. Escaping `<` keeps the
           // JSON from closing the script tag early.
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD).replace(/</g, '\\u003c') }}
         />
+        {/*
+          The depth field lives in the layout, not in each page. Eleven of the
+          fifteen routes had no backdrop at all — /app, /chat, /mcp, /verify and
+          every docs page rendered as flat black, which is what made them feel
+          unfinished next to the landing page. One mounting point means a new
+          route cannot forget it.
+        */}
+        <DepthField />
         {children}
       </body>
     </html>

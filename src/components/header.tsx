@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
-import { BRAND_MARK_PATH, BRAND_MARK_TRANSFORM } from '@/lib/brand-mark';
 import { Menu, Wallet, X } from 'lucide-react';
 import { Button, sizes, variants } from './button';
 import { cn } from '@/lib/utils';
@@ -13,31 +13,23 @@ export function Logo({ className = '' }: { className?: string }) {
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
       {/*
-        ArShield mark: the wolf-and-shield, traced from the source artwork by
-        scripts/gen-brand-assets.py + potrace. Drawn as one path, fill-rule
-        evenodd, so the negative space inside the mark stays transparent.
-        No background plate.
+        ElyShield mark: the aqua ribbon knot, used as a raster asset rather than
+        a traced path. The artwork is a 3D gradient mark — highlights near-white
+        mint falling to deep teal shadow — and potrace flattens that to a single
+        flat fill, which is why this is an <img> and not an inline SVG path.
+        public/brand/logo-mark.png is the transparent cut-out of the source art.
       */}
-      <svg
-        width="26"
-        height="26"
-        viewBox="0 0 32 32"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+      <Image
+        src="/brand/logo-mark.png"
+        alt=""
         aria-hidden
-      >
-        <g transform={BRAND_MARK_TRANSFORM}>
-          <path d={BRAND_MARK_PATH} fill="url(#logo-gold)" fillRule="evenodd" />
-        </g>
-        <defs>
-          <linearGradient id="logo-gold" x1="0" y1="0" x2="1" y2="1">
-            <stop stopColor="#FFD86B" />
-            <stop offset="0.55" stopColor="#F6B621" />
-            <stop offset="1" stopColor="#C98A10" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <span className="text-[15px] font-medium tracking-tight text-[#e6e9ef]">ArShield</span>
+        width={26}
+        height={26}
+        className="h-[26px] w-[26px] select-none"
+        draggable={false}
+        priority
+      />
+      <span className="text-[15px] font-medium tracking-tight text-[#e6e9ef]">ElyShield</span>
     </span>
   );
 }
@@ -51,7 +43,7 @@ const NAV = [
   { href: '/m', label: 'Messages' },
   { href: '/verify', label: 'Verify' },
   { href: '/#protocol', label: 'How it works' },
-  { href: '/#tiers', label: 'Tiers' },
+  { href: '/#limits', label: 'Limits' },
   { href: '/#shield', label: 'Shield' },
   { href: '/#faq', label: 'FAQ' },
 ];
@@ -67,7 +59,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#020610]/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" aria-label="ArShield home" className="flex items-center gap-2">
+        <Link href="/" aria-label="ElyShield home" className="flex items-center gap-2">
           <Logo />
         </Link>
 
@@ -88,8 +80,8 @@ export function Header() {
           {mounted && wallet ? (
             <button
               onClick={disconnect}
-              title={`Connected to ARC (${wallet.chainId}) — click to disconnect`}
-              className="inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/[0.07] px-3.5 py-1.5 text-[12.5px] font-medium text-emerald-300 transition-colors hover:border-emerald-400/50"
+              title={`Connected to Elysium (${wallet.chainId}) — click to disconnect`}
+              className="inline-flex items-center gap-2 rounded-[3px] border border-emerald-400/25 bg-emerald-400/[0.07] px-3.5 py-1.5 text-[12.5px] font-medium text-emerald-300 transition-colors hover:border-emerald-400/50"
             >
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />

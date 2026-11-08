@@ -22,7 +22,7 @@
  *             when the RPC refuses the call or returns nothing useful.
  */
 
-import { ARC_RPC, ARC_CHAIN_ID } from '@/lib/arshield/constants';
+import { ELYSIUM_RPC, ELYSIUM_CHAIN_ID } from '@/lib/elyshield/constants';
 
 export type WalletKind = 'eoa' | 'smart' | 'unknown';
 
@@ -89,7 +89,7 @@ function smartOnlyFlag(provider: ProviderWithFlags | null): string | null {
 }
 
 /**
- * Ask ARC whether this address has code.
+ * Ask Elysium whether this address has code.
  *
  * Returns null when the answer cannot be trusted — RPC down, rate limited,
  * malformed response — so the caller can fall back rather than guess. A guess in
@@ -97,7 +97,7 @@ function smartOnlyFlag(provider: ProviderWithFlags | null): string | null {
  */
 async function hasContractCode(address: string): Promise<boolean | null> {
   try {
-    const res = await fetch(ARC_RPC, {
+    const res = await fetch(ELYSIUM_RPC, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -139,7 +139,7 @@ export async function detectWalletKind(address: string): Promise<Detection> {
   if (code === true) {
     return {
       kind: 'smart',
-      reason: 'This address has contract code on ARC, so its signatures are EIP-1271.',
+      reason: 'This address has contract code on Elysium, so its signatures are EIP-1271.',
       walletName,
     };
   }
@@ -153,7 +153,7 @@ export async function detectWalletKind(address: string): Promise<Detection> {
 
   return {
     kind: 'unknown',
-    reason: 'Could not reach ARC to check this address. Both key paths are open.',
+    reason: 'Could not reach Elysium to check this address. Both key paths are open.',
     walletName,
   };
 }
@@ -164,4 +164,4 @@ export function isUnsupported(detection: Detection): boolean {
 }
 
 /** Expose the chain we checked against, for the status line. */
-export const DETECTION_CHAIN = ARC_CHAIN_ID;
+export const DETECTION_CHAIN = ELYSIUM_CHAIN_ID;

@@ -4,18 +4,19 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, FileKey, Loader2, ShieldCheck, Upload, Wallet } from 'lucide-react';
 import { Background } from '@/components/background';
+import { BackgroundOrbit } from '@/components/background-orbit';
 import { Logo } from '@/components/header';
 import { Button } from '@/components/button';
 import { AppWorkspace } from '@/components/app-workspace';
 import { useWallet } from '@/lib/use-wallet';
-import { ephemeralIdentity, unwrapKeyfile, wrapKeyfile, type ArShieldKeyPair } from '@/lib/arshield';
-import { ARGON2ID_PARAMS_PROD } from '@/lib/arshield/constants';
+import { ephemeralIdentity, unwrapKeyfile, wrapKeyfile, type ElyShieldKeyPair } from '@/lib/elyshield';
+import { ARGON2ID_PARAMS_PROD } from '@/lib/elyshield/constants';
 import { KeyfileDialog } from '@/components/keyfile-dialog';
 import { useScreenTransition, SWAP_CSS } from '@/lib/use-screen-transition';
-import { fetchTierState, TIER_BY_KEY, type Tier, type TierState } from '@/lib/tiers';
+import { fetchTier, TIER_BY_KEY, type Tier } from '@/lib/tiers';
 import { cn } from '@/lib/utils';
 
-type KeySource = { kind: 'wallet'; label: string; kp: ArShieldKeyPair } | { kind: 'keyfile'; label: string; kp: ArShieldKeyPair } | null;
+type KeySource = { kind: 'wallet'; label: string; kp: ElyShieldKeyPair } | { kind: 'keyfile'; label: string; kp: ElyShieldKeyPair } | null;
 
 export function AppClient() {
   const { wallet, deriving, error: walletError, mounted, connect, disconnect, deriveIdentity } = useWallet();
@@ -32,16 +33,10 @@ export function AppClient() {
   // reads as moving into the app rather than a page replace.
   const screen = useScreenTransition(source ? 'workspace' : 'picker');
   const [tier, setTier] = useState<Tier>(TIER_BY_KEY.free);
-  // Balance and price alongside the tier, so the pill can show what the
-  // entitlement was derived from instead of asserting a level with no evidence.
-  const [holdings, setHoldings] = useState<{ balance: number; usd: number; priceSource: TierState['priceSource'] } | null>(null);
-  const [tierBusy, setTierBusy] = useState(false);
 
-  const tierBadge = tierBusy
-    ? 'READING TIER…'
-    : wallet
-      ? `${tier.name.toUpperCase()} TIER${tier.key === 'free' ? ' · PRE-LAUNCH · SHOWING FREE' : ''}`
-      : 'CONNECT WALLET TO VERIFY TIER · SHOWING FREE';
+  // No token gate: one plan for everyone, so the badge never claims a level that
+  // has to be verified against a balance.
+  const tierBadge = `${tier.name.toUpperCase()} · NO TOKEN GATE`;
 
   const pickWallet = async () => {
     setErr(null);
@@ -53,16 +48,7 @@ export function AppClient() {
     try {
       const kp = await deriveIdentity();
       setSource({ kind: 'wallet', label: `wallet · ${wallet.address.slice(0, 6)}…${wallet.address.slice(-4)}`, kp });
-      // Tier check: read $arshield balance for this address. Falls back to Free
-      // pre-launch (no token deployed yet).
-      setTierBusy(true);
-      try {
-        const state = await fetchTierState(wallet.address);
-        setTier(state.tier);
-        setHoldings({ balance: state.balance, usd: state.usd, priceSource: state.priceSource });
-      } finally {
-        setTierBusy(false);
-      }
+      setTier(await fetchTier(wallet.address));
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
     } finally {
@@ -87,7 +73,7 @@ export function AppClient() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `arshield-keyfile-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `elyshield-keyfile-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
       setSource({ kind: 'keyfile', label: 'keyfile (generated)', kp });
@@ -113,7 +99,7 @@ export function AppClient() {
       try {
         parsed = JSON.parse(json);
       } catch {
-        throw new Error('That file is not valid JSON, so it cannot be an ArShield key file.');
+        throw new Error('That file is not valid JSON, so it cannot be an ElyShield key file.');
       }
       const kp = await unwrapKeyfile(parsed as Parameters<typeof unwrapKeyfile>[0], passphrase, setKdfProgress);
       setSource({ kind: 'keyfile', label: 'keyfile (loaded)', kp });
@@ -143,11 +129,12 @@ export function AppClient() {
   const pickerBody = (
     <>
       <Background />
+      <BackgroundOrbit subtle />
       <div className="relative min-h-screen">
         {/* App header */}
         <header className="border-b border-white/[0.06] bg-[#020610]/70 backdrop-blur-xl">
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-            <Link href="/" aria-label="ArShield home"><Logo /></Link>
+            <Link href="/" aria-label="ElyShield home"><Logo /></Link>
             <div className="flex items-center gap-3">
               <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] text-[#9aa3b2] hover:text-white">
                 <ArrowLeft className="h-3.5 w-3.5" /> Back to site
@@ -162,7 +149,7 @@ export function AppClient() {
 
         <main className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
             <div className="mb-6 flex justify-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-brand-gold/25 bg-brand-gold/[0.06] px-3 py-1 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-brand-gold">
+              <span className="inline-flex items-center gap-2 rounded-[3px] border border-brand-gold/25 bg-brand-gold/[0.06] px-3 py-1 text-[10.5px] font-medium text-brand-gold">
                 <ShieldCheck className="h-3 w-3" />
                 {tierBadge}
               </span>
@@ -200,7 +187,7 @@ export function AppClient() {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-[#e6e9ef]">Wallet</span>
-                        <span className="rounded-full border border-white/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[#7b8493]">
+                        <span className="rounded-[3px] border border-white/10 px-1.5 py-0.5 text-[9px] font-medium text-[#7b8493]">
                           Fastest
                         </span>
                       </div>
@@ -225,7 +212,7 @@ export function AppClient() {
                       {busy || deriving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wallet className="h-4 w-4" />}
                       {wallet ? 'Sign to derive' : 'Connect wallet'}
                     </Button>
-                    <p className="mt-2 text-center text-[11px] text-[#5b6474]">Connect first, then sign to derive.</p>
+                    <p className="mt-2 text-center text-[11px] text-[#77839a]">Connect first, then sign to derive.</p>
                   </div>
                 </div>
 
@@ -238,7 +225,7 @@ export function AppClient() {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-[#e6e9ef]">Key file</span>
-                        <span className="rounded-full border border-brand-gold/30 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-brand-gold">
+                        <span className="rounded-[3px] border border-brand-gold/30 px-1.5 py-0.5 text-[9px] font-medium text-brand-gold">
                           Full bunker
                         </span>
                       </div>
@@ -277,17 +264,17 @@ export function AppClient() {
                 <p className="mt-4 text-center text-[12.5px] text-red-400">{err || walletError}</p>
               )}
 
-              <p className="mt-6 text-center text-[11.5px] leading-relaxed text-[#5b6474]">
+              <p className="mt-6 text-center text-[11.5px] leading-relaxed text-[#77839a]">
                 Both paths seal with the same algorithms: ML-KEM-768 + X25519 hybrid KEM · ML-DSA-65 signatures.
                 A wallet derives your keys from its signature; a generated key file holds random ones.
               </p>
             </div>
           
             <div className="mt-6 flex items-center justify-center gap-6 text-[13px]">
-              <Link href="/#tiers" className={cn('text-brand-gold transition-colors hover:text-[#e9c35f]')}>
-                Holders encrypt more →
+              <Link href="/#limits" className={cn('text-brand-gold transition-colors hover:text-[#b3fdf4]')}>
+                What the limits are →
               </Link>
-              <Link href="/docs/architecture" className="text-[#5b6474] transition-colors hover:text-[#9aa3b2]">
+              <Link href="/docs/architecture" className="text-[#77839a] transition-colors hover:text-[#9aa3b2]">
                 cryptography spec
               </Link>
             </div>
@@ -324,9 +311,8 @@ export function AppClient() {
         <div className={screen.enteringClass}>
           <AppWorkspace
             source={source}
-            onReset={() => { setSource(null); setHoldings(null); }}
+            onReset={() => setSource(null)}
             tier={tier}
-            holdings={holdings}
           />
         </div>
       )}

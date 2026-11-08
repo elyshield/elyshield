@@ -8,7 +8,7 @@
  * workspace are byte-identical, which matters because /verify reads them both.
  */
 
-import { buildMessageUrl, encryptFile } from '@/lib/arshield';
+import { buildMessageUrl, encryptFile } from '@/lib/elyshield';
 import type { Identity } from '@/lib/agent/actions';
 
 /** Seal PNG geometry. 720×480 keeps the seven metadata lines on one screen. */
@@ -65,15 +65,15 @@ export async function buildSealPng(
   g.addColorStop(1, '#020610');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, SEAL_W, SEAL_H);
-  ctx.strokeStyle = 'rgba(209,164,19,0.35)';
+  ctx.strokeStyle = 'rgba(105, 250, 233,0.35)';
   ctx.lineWidth = 2;
   ctx.strokeRect(24, 24, 672, 432);
-  ctx.fillStyle = '#d1a413';
+  ctx.fillStyle = '#69fae9';
   ctx.font = 'bold 30px ui-monospace, monospace';
   ctx.fillText('QUANTUM SEAL', 56, 96);
   ctx.fillStyle = '#8a93a3';
   ctx.font = '15px ui-monospace, monospace';
-  ctx.fillText('ArShield · post-quantum receipt', 56, 128);
+  ctx.fillText('ElyShield · post-quantum receipt', 56, 128);
   ctx.fillStyle = '#e6e9ef';
   ctx.font = '14px ui-monospace, monospace';
   const lines = [
@@ -83,10 +83,10 @@ export async function buildSealPng(
     `${fileHash.slice(40, 72)}`,
     `time      ${new Date().toISOString()}`,
     address ? `wallet    ${address}` : `signer    ephemeral`,
-    `chain     ARC (5042)`,
+    `chain     Elysium (99901)`,
   ];
   lines.forEach((l, i) => ctx.fillText(l, 56, 190 + i * 30));
-  ctx.fillStyle = 'rgba(209,164,19,0.6)';
+  ctx.fillStyle = 'rgba(105, 250, 233,0.6)';
   ctx.font = '11px ui-monospace, monospace';
   ctx.fillText('those metadata fields are also embedded as PNG tEXt chunks', 56, 420);
 
@@ -95,7 +95,7 @@ export async function buildSealPng(
   const buf = new Uint8Array(await blob.arrayBuffer());
   return injectTextChunk(
     buf,
-    'arshield',
+    'elyshield',
     JSON.stringify({
       version: 1,
       timestamp: new Date().toISOString(),

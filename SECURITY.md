@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Email **hello@arc-shield.xyz** with `[security]` in the subject line so it is triaged
+Email **hello@elyshield.xyz** with `[security]` in the subject line so it is triaged
 first.
 
 Please include:
@@ -47,7 +47,7 @@ We would rather state these plainly than let them be discovered.
    has not had an independent cryptographic audit. The classical primitives (X25519,
    AES-GCM, SHA-256, Argon2id) come from audited [@noble](https://github.com/paulmillr/noble-curves)
    libraries.
-2. **No third-party audit of ArShield itself yet.** An independent review of the crypto core
+2. **No third-party audit of ElyShield itself yet.** An independent review of the crypto core
    and the browser implementation is on the roadmap and is not done.
 3. **This is pre-launch software.** Features may change or break.
 4. **The browser is your trust boundary.** The app is a static export with no backend, so
@@ -75,8 +75,8 @@ If you are reviewing this, the claims worth checking are:
 ## Verifying a build yourself
 
 ```bash
-git clone https://github.com/arshield/arshield
-cd arshield
+git clone https://github.com/elyshield/elyshield
+cd elyshield
 npm ci
 npm run check      # lint + typecheck + build
 npm test           # interop, recipient-only, wallet-derived end-to-end

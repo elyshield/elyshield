@@ -3,24 +3,24 @@ import { DocsLayout, DocTitle, DocH2, DocP } from '@/components/layout-docs';
 import { Reveal } from '@/components/reveal';
 
 export const metadata: Metadata = {
-  title: 'Features | ArShield Docs',
-  description: 'Everything available in ArShield today, and what is on the roadmap.',
+  title: 'Features | ElyShield Docs',
+  description: 'Everything available in ElyShield today, and what is on the roadmap.',
 };
 
 const TODAY = [
-  { title: 'File encryption', body: 'Drop any file, get an encrypted payload plus a .arshield envelope. Hybrid post-quantum, entirely client-side.' },
-  { title: 'File decryption', body: 'Open a .arshield envelope with your wallet, key file, or passphrase and recover the original file in your browser.' },
+  { title: 'File encryption', body: 'Drop any file, get an encrypted payload plus a .elyshield envelope. Hybrid post-quantum, entirely client-side.' },
+  { title: 'File decryption', body: 'Open a .elyshield envelope with your wallet, key file, or passphrase and recover the original file in your browser.' },
   { title: 'Quantum Seal PNG', body: 'Export a shareable PNG Seal carrying version, timestamp, algorithm, and file hash in its tEXt chunks.' },
   { title: 'Seal verification', body: 'Drop a Quantum Seal PNG to parse its tEXt chunks locally and inspect the embedded metadata.' },
   { title: 'Wallet-derived identity', body: 'No accounts. A single signing message derives your deterministic identity key pair on first use.' },
   { title: 'Encrypted messages', body: 'Send short encrypted messages through a link, with the plaintext never leaving your device.' },
-  { title: 'MCP server', body: 'Drive ArShield from an AI agent over the Model Context Protocol, with the wallet as identity.' },
-  { title: 'Signed x402 receipts', body: 'Optional receipts that record a paid action and travel inside the .arshield envelope.' },
+  { title: 'MCP server', body: 'Drive ElyShield from an AI agent over the Model Context Protocol, with the wallet as identity.' },
+  { title: 'Signed x402 receipts', body: 'Optional receipts that record a paid action and travel inside the .elyshield envelope.' },
 ];
 
 const NEXT = [
   { title: 'Multi-recipient envelopes', body: 'Encrypt once, allow several wallet addresses to open the same payload.' },
-  { title: 'On-chain attestations', body: 'Optionally anchor a Seal hash on ARC for a public, timestamped proof.' },
+  { title: 'On-chain attestations', body: 'Optionally anchor a Seal hash on Elysium for a public, timestamped proof.' },
   { title: 'Team workspaces', body: 'Shared key material within a group, without introducing a server that holds it.' },
   { title: 'Hardware-key support', body: 'Derive identity from a hardware wallet or FIDO2 authenticator.' },
 ];
@@ -30,7 +30,7 @@ export default function FeaturesPage() {
     <DocsLayout>
       <DocTitle eyebrow="Features">Everything available today, and what is next</DocTitle>
       <p className="mb-10 max-w-2xl text-[14.5px] leading-relaxed text-[#8a93a3]">
-        ArShield ships small and focuses on getting the cryptography right. Here is exactly what
+        ElyShield ships small and focuses on getting the cryptography right. Here is exactly what
         works right now, followed by what is planned.
       </p>
 

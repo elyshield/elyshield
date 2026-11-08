@@ -103,7 +103,7 @@ export function KeyfileDialog({
       typeof parsed === 'object' && parsed !== null &&
       (parsed as Record<string, unknown>).kdf === 'argon2id';
     if (!looksRight) {
-      setFileError('That JSON is not an ArShield key file. It should name argon2id as its KDF.');
+      setFileError('That JSON is not an ElyShield key file. It should name argon2id as its KDF.');
       return;
     }
     setFileJson(text);
@@ -151,7 +151,7 @@ export function KeyfileDialog({
         <div className="space-y-4 px-6 py-5">
           {mode === 'open' && (
             <div>
-              <label className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#8b94a4]">
+              <label className="text-[11.5px] font-medium text-[#8b94a4]">
                 Key file
               </label>
               <input
@@ -183,7 +183,7 @@ export function KeyfileDialog({
           )}
 
           <div>
-            <label className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#8b94a4]">
+            <label className="text-[11.5px] font-medium text-[#8b94a4]">
               Passphrase{' '}
               {mode === 'create' && (
                 <span className="font-normal normal-case tracking-normal text-[#6f7889]">
@@ -214,7 +214,7 @@ export function KeyfileDialog({
             </div>
 
             {mode === 'create' && tooShort && (
-              <p className="mt-2 text-[12px] text-[#e5a23c]">
+              <p className="mt-2 text-[12px] text-[#2dd9d1]">
                 At least {MIN_LEN} characters. Length matters more than symbols.
               </p>
             )}
@@ -239,7 +239,7 @@ export function KeyfileDialog({
 
           {mode === 'create' && (
             <div>
-              <label className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#8b94a4]">
+              <label className="text-[11.5px] font-medium text-[#8b94a4]">
                 Confirm passphrase
               </label>
               <input
@@ -258,7 +258,7 @@ export function KeyfileDialog({
           )}
 
           {mode === 'create' && (
-            <p className="rounded-xl border border-[var(--color-progress)]/25 bg-[var(--color-progress)]/[0.06] px-3.5 py-3 text-[12px] leading-relaxed text-[#c9b28a]">
+            <p className="rounded-xl border border-[var(--color-progress)]/25 bg-[var(--color-progress)]/[0.06] px-3.5 py-3 text-[12px] leading-relaxed text-[#9fe8e0]">
               Write this passphrase down somewhere separate from the file. If you lose both, the
               files sealed to this key are unrecoverable — no server holds a copy.
             </p>
@@ -350,7 +350,7 @@ function scorePassphrase(p: string): { score: number; label: string; tone: strin
 
   const capped = Math.min(4, Math.max(1, score));
   if (capped <= 1) return { score: 1, label: 'Weak', tone: 'bg-red-400/70', text: 'text-red-300' };
-  if (capped === 2) return { score: 2, label: 'Fair', tone: 'bg-[var(--color-progress)]', text: 'text-[#e5a23c]' };
+  if (capped === 2) return { score: 2, label: 'Fair', tone: 'bg-[var(--color-progress)]', text: 'text-[#2dd9d1]' };
   if (capped === 3) return { score: 3, label: 'Good', tone: 'bg-[var(--color-action)]', text: 'text-[var(--color-action)]' };
   return { score: 4, label: 'Strong', tone: 'bg-[var(--color-verified)]', text: 'text-[var(--color-verified)]' };
 }

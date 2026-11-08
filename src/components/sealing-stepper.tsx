@@ -78,7 +78,7 @@ export function SealingStepper({
       <style>{KEYFRAMES}</style>
 
       <div className="border-b border-white/[0.06] px-5 py-3">
-        <span className="font-mono text-[11.5px] uppercase tracking-[0.18em] text-[var(--color-action)]">
+        <span className="font-mono text-[11.5px] font-medium text-[var(--color-action)]">
           {title}
         </span>
       </div>

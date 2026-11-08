@@ -1,273 +1,76 @@
 'use client';
 
 /**
- * Tier resolution: what the connected wallet is entitled to.
+ * Usage limits for the web app.
  *
- * Two reads, from two places, and the split matters:
+ * There is no token and no chain read here any more. The $ELYSHIELD tier gate —
+ * balanceOf over a chain plus a USD price feed — was removed with the move to
+ * Elysium/ElyShield, so the limits below apply to everyone the same way and the
+ * app has no on-chain dependency at all.
  *
- *   balance  ARC RPC, eth_call balanceOf(address) against the $arshield
- *            contract. This is the part that cannot be faked by a price feed.
- *   price    Peach (api.peach.ag), which reports USD per token. Used only to
- *            convert a token count into the USD figure the tier thresholds are
- *            expressed in.
- *
- * Everything degrades. A tier gate that hard-fails because a third party is down
- * would lock paying holders out of the app, which is worse than the gate being
- * briefly generous. So:
- *
- *   price API reachable   → balance x live price  → tier
- *   price API unreachable → balance x fallback rate → tier
- *   no fallback rate      → Free
- *
- * The fallback rate is deliberately conservative. Being briefly over-generous on
- * a soft gate is recoverable; being wrong in the other direction means a holder
- * cannot use what they paid for.
+ * When a token gate comes back, it belongs here as a single function that
+ * returns a Tier for an address; nothing else in the app should need to change.
  */
 
 const MB = 1024 * 1024;
 
 export type Tier = {
-  key: 'free' | 'holder' | 'pro' | 'whale';
+  key: 'free';
   name: string;
   minUsd: number;
   encryptionsPerDay: number;
   maxFileBytes: number;
 };
 
+/**
+ * One tier only. The names are kept because the UI, the docs pages and the
+ * copy all reference them; dropping them would be a much larger change than
+ * removing the token read.
+ */
 export const TIERS: Tier[] = [
-  { key: 'free', name: 'Free', minUsd: 0, encryptionsPerDay: 3, maxFileBytes: 25 * MB },
-  { key: 'holder', name: 'Holder', minUsd: 20, encryptionsPerDay: 25, maxFileBytes: 100 * MB },
-  { key: 'pro', name: 'Pro', minUsd: 100, encryptionsPerDay: 250, maxFileBytes: 1024 * MB },
-  { key: 'whale', name: 'Whale', minUsd: 1000, encryptionsPerDay: Infinity, maxFileBytes: Infinity },
+  { key: 'free', name: 'Free', minUsd: 0, encryptionsPerDay: 25, maxFileBytes: 100 * MB },
 ];
 
 export const TIER_BY_KEY = Object.fromEntries(TIERS.map((t) => [t.key, t])) as Record<Tier['key'], Tier>;
 
-/* ---- configuration ------------------------------------------------------- */
-
-/**
- * The $arshield contract on ARC. Empty until the token launches, and while it is
- * empty every wallet reads as Free — there is nothing to hold.
- */
-export const ARSHIELD_CONTRACT = (
-  process.env.NEXT_PUBLIC_ARSHIELD_CONTRACT ?? ''
-)
-  .trim()
-  .toLowerCase();
-
-/**
- * ARC RPC.
- *
- * The first entry is the canonical endpoint; the rest are fallbacks used in
- * order if a call fails. All seven were verified live and reporting chainId
- * 0x13b2, and all seven send permissive CORS headers, so a direct browser call
- * works and no proxy is needed.
- */
-export const ARC_RPCS: string[] = [
-  'https://rpc.mainnet.arc.io',
-  'https://rpc.blockdaemon.mainnet.arc.io',
-  'https://arc.drpc.org',
-  'https://rpc.beamrpc.com',
-];
-
-/**
- * Used when the price API cannot be reached.
- *
- * Set NEXT_PUBLIC_ARSHIELD_USD_FALLBACK to the launch price in USD. Leaving it
- * at 0 means an unreachable price feed resolves everyone to Free, which is the
- * safe direction but will annoy holders — so set it before launch.
- */
-export const ARSHIELD_USD_FALLBACK = Number(
-  process.env.NEXT_PUBLIC_ARSHIELD_USD_FALLBACK ?? '0'
-);
-
-const PRICE_API = 'https://api.peach.ag/arc/v1/arc/market_price';
-/** Standard 18 decimals. Not a BigInt literal — the build targets ES2017. */
-const TOKEN_DECIMALS = 18;
-
-const PRICE_CACHE_MS = 60_000;
-const BALANCE_CACHE_MS = 30_000;
-
-/* ---- on-chain balance ---------------------------------------------------- */
-
-// uint256 balanceOf(address), first four bytes of keccak256.
-const SEL_BALANCE_OF = '0x70a08231';
-
-function padAddress(addr: string): string {
-  return addr.toLowerCase().replace(/^0x/, '').padStart(64, '0');
-}
-
-/**
- * Read balanceOf over ARC, trying each RPC in turn.
- *
- * Returns the raw token amount scaled by decimals, or null if every endpoint
- * failed — null rather than 0, because "we could not read it" and "you hold
- * none" mean different things to the caller.
- */
-async function readBalance(address: string): Promise<bigint | null> {
-  if (!ARSHIELD_CONTRACT) return null;
-
-  const data = SEL_BALANCE_OF + padAddress(address);
-  const body = JSON.stringify({
-    jsonrpc: '2.0',
-    id: 1,
-    method: 'eth_call',
-    params: [{ to: ARSHIELD_CONTRACT, data }, 'latest'],
-  });
-
-  for (const rpc of ARC_RPCS) {
-    try {
-      const res = await fetch(rpc, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body,
-        signal: AbortSignal.timeout(6000),
-      });
-      if (!res.ok) continue;
-      const json = (await res.json()) as { result?: string; error?: unknown };
-      if (json.error || typeof json.result !== 'string') continue;
-      if (json.result === '0x') return BigInt(0);
-      return BigInt(json.result);
-    } catch {
-      // Try the next endpoint. A failing RPC is expected, not exceptional.
-    }
-  }
-  return null;
-}
-
-/* ---- price --------------------------------------------------------------- */
-
-/**
- * USD per $arshield, from Peach.
- *
- * Peach proxies Birdeye. As with any spot price this is manipulable if the pool
- * is thin, which is why the balance read is what decides entitlement and this
- * only converts units — a flash-loaned price spike would still need the tokens
- * to actually be held at call time.
- */
-async function readPriceUsd(): Promise<number | null> {
-  if (!ARSHIELD_CONTRACT) return null;
-  try {
-    const url =
-      `${PRICE_API}?base_symbol_address=${ARSHIELD_CONTRACT}` +
-      `&quote_coin_address=usd&market=birdeye`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
-    if (!res.ok) return null;
-    const json = (await res.json()) as {
-      code?: number;
-      data?: { prices?: Array<{ price?: string }> };
-    };
-    const raw = json?.data?.prices?.[0]?.price;
-    if (raw == null) return null;
-    const n = Number(raw);
-    return Number.isFinite(n) && n > 0 ? n : null;
-  } catch {
-    return null;
-  }
-}
-
-/* ---- caches -------------------------------------------------------------- */
-
-type Cache<T> = { at: number; value: T };
-
-let priceCache: Cache<number | null> | null = null;
-let balanceCache: Cache<bigint | null> | null = null;
-let balanceCacheFor = '';
-
-function fresh<T>(c: Cache<T> | null, maxAge: number): boolean {
-  return !!c && Date.now() - c.at < maxAge;
-}
+/** The single tier everyone resolves to while no token gate exists. */
+export const ACTIVE_TIER: Tier = TIER_BY_KEY.free;
 
 /* ---- public API ---------------------------------------------------------- */
 
-/**
- * Addresses granted the top tier for testing.
- *
- * Pre-launch there is no token, so everyone reads as Free and the daily cap is
- * easy to hit while exercising the app. Lowercase for comparison — addresses are
- * case-insensitive but checksummed in display, so never match the raw string.
- */
-export const TEST_UNLIMITED: ReadonlySet<string> = new Set([
-  '0xaece0ab2a46f31209f4c6381f20a5af218fda176',
-]);
-
-export function isTestUnlimited(address?: string | null): boolean {
-  return !!address && TEST_UNLIMITED.has(address.toLowerCase());
-}
-
-export function tierFromUsd(usd: number): Tier {
-  if (!Number.isFinite(usd) || usd <= 0) return TIER_BY_KEY.free;
-  const found = [...TIERS].reverse().find((t) => usd >= t.minUsd);
-  return found ?? TIER_BY_KEY.free;
-}
-
 export type TierState = {
   tier: Tier;
-  /** Whole tokens held, 0 when unknown. */
+  /** Always 0: nothing is read from a chain any more. */
   balance: number;
-  /** USD value of the balance, 0 when unknown. */
+  /** Always 0. */
   usd: number;
-  /** Where the number came from, so the UI can be honest about it. */
+  /** Always 'none'. */
   priceSource: 'live' | 'fallback' | 'none';
-  /** False when the balance read failed; the tier is then only a floor. */
+  /** True: there is nothing to fail, so the limit is exact, not a floor. */
   balanceKnown: boolean;
 };
 
 /**
  * Resolve the tier for an address.
  *
- * Note this is a soft gate evaluated in the browser. It shapes the interface and
- * the limits, and it is trivially overridable by anyone with devtools. That is
- * an accepted trade-off for a client-only app; if the limits ever need to bind,
- * the balance check has to move server-side.
+ * Kept async and address-taking so every existing caller keeps working and so
+ * re-introducing a token gate later is a change in this file alone.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function fetchTierState(address?: string | null): Promise<TierState> {
-  const free: TierState = {
-    tier: TIER_BY_KEY.free,
+  return {
+    tier: ACTIVE_TIER,
     balance: 0,
     usd: 0,
     priceSource: 'none',
-    balanceKnown: false,
+    balanceKnown: true,
   };
-
-  if (!address) return free;
-  if (isTestUnlimited(address)) {
-    return { tier: TIER_BY_KEY.whale, balance: 0, usd: 0, priceSource: 'none', balanceKnown: true };
-  }
-  // No contract deployed yet: there is nothing to hold, so nothing to read.
-  if (!ARSHIELD_CONTRACT) return free;
-
-  // Balance.
-  if (balanceCacheFor !== address || !fresh(balanceCache, BALANCE_CACHE_MS)) {
-    balanceCache = { at: Date.now(), value: await readBalance(address) };
-    balanceCacheFor = address;
-  }
-  const raw = balanceCache?.value ?? null;
-  if (raw == null) return free;
-  const balance = Number(raw) / Math.pow(10, TOKEN_DECIMALS);
-
-  // Price.
-  if (!fresh(priceCache, PRICE_CACHE_MS)) {
-    priceCache = { at: Date.now(), value: await readPriceUsd() };
-  }
-  let price = priceCache?.value ?? null;
-  let priceSource: TierState['priceSource'] = price == null ? 'none' : 'live';
-  if (price == null && ARSHIELD_USD_FALLBACK > 0) {
-    price = ARSHIELD_USD_FALLBACK;
-    priceSource = 'fallback';
-  }
-  if (price == null) {
-    // Balance is known but unpriced. Report the holding, gate as Free.
-    return { tier: TIER_BY_KEY.free, balance, usd: 0, priceSource: 'none', balanceKnown: true };
-  }
-
-  const usd = balance * price;
-  return { tier: tierFromUsd(usd), balance, usd, priceSource, balanceKnown: true };
 }
 
 /** Convenience wrapper when only the tier is needed. */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function fetchTier(address?: string | null): Promise<Tier> {
-  return (await fetchTierState(address)).tier;
+  return ACTIVE_TIER;
 }
 
 export function tierLabel(tier: Tier): string {
@@ -280,7 +83,7 @@ export function tierLabel(tier: Tier): string {
 
 /* ---- daily counter (localStorage, resets 00:00 UTC) ---------------------- */
 
-const LS_KEY = 'arshield:enc-count';
+const LS_KEY = 'elyshield:enc-count';
 
 function utcDayKey(d: Date): string {
   return d.toISOString().slice(0, 10);

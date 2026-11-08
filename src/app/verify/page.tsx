@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Background } from '@/components/background';
+import { BackgroundOrbit } from '@/components/background-orbit';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Section } from '@/components/section';
@@ -8,7 +9,7 @@ import { Eyebrow } from '@/components/button';
 import { SealDropzone } from '@/components/seal-dropzone';
 
 export const metadata: Metadata = {
-  title: 'ArShield | Post-Quantum Security Infrastructure on ARC',
+  title: 'ElyShield | Post-Quantum Security Infrastructure on Elysium',
   description: 'Verify a Quantum Seal: read its unsigned metadata fields and cross-check the file hash.',
 };
 
@@ -27,7 +28,7 @@ const FIELDS = [
   },
   {
     label: 'file_hash',
-    body: 'SHA-256 of the .arshield envelope this Seal belongs to. Match it against the envelope to confirm nothing changed.',
+    body: 'SHA-256 of the .elyshield envelope this Seal belongs to. Match it against the envelope to confirm nothing changed.',
   },
   {
     label: 'wallet',
@@ -50,7 +51,7 @@ const STEPS = [
   },
   {
     title: 'Match the hash',
-    body: 'Hash the .arshield envelope the Seal describes and compare it to the Seal’s file_hash. A mismatch means the file changed after it was sealed.',
+    body: 'Hash the .elyshield envelope the Seal describes and compare it to the Seal’s file_hash. A mismatch means the file changed after it was sealed.',
   },
   {
     title: 'Confirm with the envelope',
@@ -62,6 +63,7 @@ export default function VerifyPage() {
   return (
     <>
       <Background />
+      <BackgroundOrbit subtle />
       <Header />
       <main className="relative">
         {/* Hero */}

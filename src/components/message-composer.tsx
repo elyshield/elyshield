@@ -7,7 +7,7 @@ import { Background } from '@/components/background';
 import { Logo } from '@/components/header';
 import { Button } from '@/components/button';
 import { Reveal } from '@/components/reveal';
-import { encryptFile, buildMessageUrl, ephemeralIdentity, parsePublicKey } from '@/lib/arshield';
+import { encryptFile, buildMessageUrl, ephemeralIdentity, parsePublicKey } from '@/lib/elyshield';
 import { cn } from '@/lib/utils';
 
 const MAX = 65536;
@@ -53,7 +53,7 @@ export function MessageComposer() {
       <div className="relative min-h-screen">
         <header className="border-b border-white/[0.06] bg-[#020610]/70 backdrop-blur-xl">
           <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 sm:px-6">
-            <Link href="/" aria-label="ArShield home"><Logo /></Link>
+            <Link href="/" aria-label="ElyShield home"><Logo /></Link>
             <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] text-[#9aa3b2] hover:text-white">
               <ArrowLeft className="h-3.5 w-3.5" /> Back to site
             </Link>
@@ -72,10 +72,10 @@ export function MessageComposer() {
             <div className="panel mt-10 p-6">
               <div className="mb-3 flex items-center gap-2">
                 <MessageSquare className="h-4 w-4 text-brand-gold" />
-                <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5b6474]">Compose</span>
+                <span className="text-[10px] font-medium text-[#77839a]">Compose</span>
               </div>
 
-              <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5b6474]">Message</label>
+              <label className="mb-1.5 block text-[10px] font-medium text-[#77839a]">Message</label>
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value.slice(0, MAX))}
@@ -83,17 +83,17 @@ export function MessageComposer() {
                 placeholder="Write something that only the holder of the link can read…"
                 className="w-full rounded-xl border border-white/10 bg-[#03070f] px-3.5 py-3 text-[13.5px] text-[#e6e9ef] outline-none focus:border-brand-gold/50"
               />
-              <div className="mt-1.5 flex items-center justify-between text-[11px] text-[#5b6474]">
+              <div className="mt-1.5 flex items-center justify-between text-[11px] text-[#77839a]">
                 <span>Encrypted bytes live in the URL fragment, never sent to a server.</span>
                 <span className="font-mono">{text.length} / {MAX} B</span>
               </div>
 
               <div className="mt-5">
-                <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5b6474]">Recipient</div>
+                <div className="mb-2 text-[10px] font-medium text-[#77839a]">Recipient</div>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {([
                     { id: 'anyone', label: 'Anyone with link', desc: 'Self-decrypting · the link carries the key' },
-                    { id: 'specific', label: 'Specific recipient', desc: 'Paste their ArShield public key' },
+                    { id: 'specific', label: 'Specific recipient', desc: 'Paste their ElyShield public key' },
                   ] as const).map((o) => (
                     <button
                       key={o.id}
@@ -133,7 +133,7 @@ export function MessageComposer() {
               {url && (
                 <div className="mt-5 rounded-xl border border-white/[0.08] bg-[#03070f] p-4">
                   <div className="mb-2 flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-300">
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-300">
                       <Check className="h-3.5 w-3.5" /> Message URL ready
                     </span>
                     <button
@@ -144,7 +144,7 @@ export function MessageComposer() {
                     </button>
                   </div>
                   <div className="max-h-28 overflow-y-auto break-all font-mono text-[10.5px] text-[#8a93a3]">{url}</div>
-                  <p className="mt-2 text-[11px] text-[#5b6474]">
+                  <p className="mt-2 text-[11px] text-[#77839a]">
                     Share this link. It decrypts itself in the browser — the key rides in the fragment.
                   </p>
                 </div>

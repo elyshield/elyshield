@@ -2,7 +2,7 @@
  * The chat agent's intent router.
  *
  * Deliberately local and deterministic: no model, no API key, no network. Two
- * reasons this is the right shape for ArShield, and neither is about cost.
+ * reasons this is the right shape for ElyShield, and neither is about cost.
  *
  * 1. The product's whole claim is that files never leave the device. A server
  *    that reads the user's instructions would have to hold their key material to
@@ -106,7 +106,7 @@ function extractMessageText(raw: string): string | null {
 /** Which artifact the user wants downloaded, when they said so. */
 function extractDownloadTarget(raw: string): 'envelope' | 'seal' | 'file' {
   if (/\bseal\b|\bpn(g|j)\b|receipt|bukti/i.test(raw)) return 'seal';
-  if (/\b(envelope|container|arshield|hasil|result)\b/i.test(raw)) return 'envelope';
+  if (/\b(envelope|container|elyshield|hasil|result)\b/i.test(raw)) return 'envelope';
   return 'file';
 }
 

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { AppClient } from './app-client';
 
 export const metadata: Metadata = {
-  title: 'ArShield | Post-Quantum Security Infrastructure on ARC',
+  title: 'ElyShield | Post-Quantum Security Infrastructure on Elysium',
   description: 'Quantum-safe encryption, in your browser. Files never leave your device.',
 };
 

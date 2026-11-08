@@ -1,10 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { BRAND_MARK_PATH } from '@/lib/brand-mark';
 
 /**
- * ArShield's signature visual: the mark travelling a route through the five
+ * ElyShield's signature visual: the mark travelling a route through the five
  * stages of an envelope.
  *
  * Everything here is driven by one shared timeline. The stations, the crypto
@@ -39,7 +38,7 @@ const STATIONS: Station[] = [
   { x: 340, y: 108, label: 'SEAL', primitive: 'ML-KEM-768 + X25519', at: 0.2 },
   { x: 630, y: 216, label: 'AGENT', primitive: 'MCP · stdio', at: 0.4 },
   { x: 925, y: 118, label: 'VERIFY', primitive: 'ML-DSA-65', at: 0.6 },
-  { x: 1160, y: 276, label: 'SEALED', primitive: '.arshield', at: 0.85 },
+  { x: 1160, y: 276, label: 'SEALED', primitive: '.elyshield', at: 0.85 },
 ];
 
 /**
@@ -121,22 +120,22 @@ export function EnvelopeFlow() {
         viewBox="0 0 1250 400"
         className="w-full"
         role="img"
-        aria-label="The ArShield mark travels from a file through key agreement, the agent, signature verification and out as a sealed .arshield envelope."
+        aria-label="The ElyShield mark travels from a file through key agreement, the agent, signature verification and out as a sealed .elyshield envelope."
       >
         <defs>
           <linearGradient id="env-gold" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#d1a413" />
-            <stop offset="0.5" stopColor="#f0a13a" />
-            <stop offset="1" stopColor="#4ade9b" />
+            <stop offset="0" stopColor="#69fae9" />
+            <stop offset="0.5" stopColor="#2dd9d1" />
+            <stop offset="1" stopColor="#a4fbf3" />
           </linearGradient>
           <linearGradient id="env-mark" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#FFD86B" />
-            <stop offset="0.55" stopColor="#F6B621" />
-            <stop offset="1" stopColor="#C98A10" />
+            <stop offset="0" stopColor="#D4FFFA" />
+            <stop offset="0.55" stopColor="#69FAE9" />
+            <stop offset="1" stopColor="#0F9E97" />
           </linearGradient>
           <radialGradient id="env-node-off">
-            <stop offset="0" stopColor="#6b5a2a" />
-            <stop offset="1" stopColor="#3d3318" />
+            <stop offset="0" stopColor="#15474d" />
+            <stop offset="1" stopColor="#0a2b31" />
           </radialGradient>
           <filter id="env-soft" x="-60%" y="-60%" width="220%" height="220%">
             <feGaussianBlur stdDeviation="9" />
@@ -145,12 +144,22 @@ export function EnvelopeFlow() {
             <feGaussianBlur stdDeviation="3.5" />
           </filter>
 
-          <g id="arshield-glyph">
-            <g transform={`scale(${GLYPH / 32}) translate(-16 -16)`}>
-              <g transform="translate(0 32) scale(0.00625 -0.00625)">
-                <path d={BRAND_MARK_PATH} fill="url(#env-mark)" fillRule="evenodd" />
-              </g>
-            </g>
+          <g id="elyshield-glyph">
+            {/*
+              The travelling mark in the animation. The source artwork is a 3D
+              gradient logo, so it is embedded as a raster image inside the SVG
+              and positioned with a `<use>` transform — tracing it to a single
+              path would flatten the gradient to one flat aqua fill.
+              y = -GLYPH/2 centres it on the route point.
+            */}
+            <image
+              href="/brand/logo-mark.png"
+              x={-GLYPH / 2}
+              y={-GLYPH / 2}
+              width={GLYPH}
+              height={GLYPH}
+              preserveAspectRatio="xMidYMid meet"
+            />
           </g>
         </defs>
 
@@ -178,7 +187,7 @@ export function EnvelopeFlow() {
               y={s.y + 38}
               textAnchor="middle"
               fontSize="10.5"
-              fill={i === N - 1 ? 'rgba(74,222,155,0.85)' : 'rgba(209,164,19,0.8)'}
+              fill={i === N - 1 ? 'rgba(74,222,155,0.85)' : 'rgba(105, 250, 233,0.8)'}
               fontFamily="ui-monospace, SFMono-Regular, monospace"
               letterSpacing="1.1"
               style={{
@@ -196,7 +205,7 @@ export function EnvelopeFlow() {
           const isLast = i === N - 1;
           const on = lit[i];
           const active = i === activeIdx && t < 0.92;
-          const color = isLast ? '#4ade9b' : '#f6b621';
+          const color = isLast ? '#a4fbf3' : '#69fae9';
           return (
             <g key={s.label}>
               {/* halo, brightest on the station being reached */}
@@ -205,7 +214,7 @@ export function EnvelopeFlow() {
                   cx={s.x}
                   cy={s.y}
                   r={active ? 30 : 20}
-                  fill={isLast ? 'rgba(74,222,155,0.20)' : 'rgba(246,182,33,0.16)'}
+                  fill={isLast ? 'rgba(74,222,155,0.20)' : 'rgba(105, 250, 233,0.16)'}
                   filter="url(#env-soft)"
                   style={{ transition: 'r 400ms ease-out' }}
                 />
@@ -259,10 +268,10 @@ export function EnvelopeFlow() {
               opacity="0.5"
               filter="url(#env-tight)"
             />
-            <circle r="46" fill="rgba(246,182,33,0.16)" filter="url(#env-soft)">
+            <circle r="46" fill="rgba(105, 250, 233,0.16)" filter="url(#env-soft)">
               <animateMotion dur={`${CYCLE}s`} repeatCount="indefinite" path={ROUTE} rotate="0" />
             </circle>
-            <use href="#arshield-glyph">
+            <use href="#elyshield-glyph">
               <animateMotion dur={`${CYCLE}s`} repeatCount="indefinite" path={ROUTE} rotate="0" />
             </use>
           </>
@@ -270,7 +279,7 @@ export function EnvelopeFlow() {
 
         {reduced && (
           <g transform={`translate(${STATIONS[N - 1].x} ${STATIONS[N - 1].y})`}>
-            <use href="#arshield-glyph" />
+            <use href="#elyshield-glyph" />
           </g>
         )}
       </svg>

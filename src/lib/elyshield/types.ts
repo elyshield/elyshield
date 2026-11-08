@@ -1,30 +1,30 @@
-/** Typed error hierarchy for ArShield. Every failure mode is a named class so
+/** Typed error hierarchy for ElyShield. Every failure mode is a named class so
  * callers and agents can branch on `.code` instead of matching message text. */
 
-export class ArShieldError extends Error {
+export class ElyShieldError extends Error {
   code: string;
   constructor(message: string, code: string) {
     super(message);
     this.code = code;
-    this.name = 'ArShieldError';
+    this.name = 'ElyShieldError';
   }
 }
 
-export class InvalidPassphraseError extends ArShieldError {
+export class InvalidPassphraseError extends ElyShieldError {
   constructor() {
     super('Wrong passphrase or corrupted key file', 'INVALID_PASSPHRASE');
     this.name = 'InvalidPassphraseError';
   }
 }
 
-export class CorruptFileError extends ArShieldError {
+export class CorruptFileError extends ElyShieldError {
   constructor(detail: string) {
-    super(`Corrupt or invalid .arshield file: ${detail}`, 'CORRUPT_FILE');
+    super(`Corrupt or invalid .elyshield file: ${detail}`, 'CORRUPT_FILE');
     this.name = 'CorruptFileError';
   }
 }
 
-export class SignatureError extends ArShieldError {
+export class SignatureError extends ElyShieldError {
   constructor() {
     super('Signature verification failed', 'SIGNATURE_FAILED');
     this.name = 'SignatureError';
@@ -34,31 +34,31 @@ export class SignatureError extends ArShieldError {
 /* --- Key shapes --- */
 export type MlKemKeyPair = { publicKey: Uint8Array; secretKey: Uint8Array };
 
-export type ArShieldPublicKey = {
+export type ElyShieldPublicKey = {
   mlkem: Uint8Array;
   x25519: Uint8Array;
   mldsa: Uint8Array;
 };
 
-export type ArShieldSecretKey = {
+export type ElyShieldSecretKey = {
   mlkem: Uint8Array;
   x25519: Uint8Array;
   mldsa: Uint8Array;
 };
 
-export type ArShieldKeyPair = {
-  publicKey: ArShieldPublicKey;
-  secretKey: ArShieldSecretKey;
+export type ElyShieldKeyPair = {
+  publicKey: ElyShieldPublicKey;
+  secretKey: ElyShieldSecretKey;
 };
 
-export type ArShieldSeeds = {
+export type ElyShieldSeeds = {
   mlkem: Uint8Array;
   x25519: Uint8Array;
   mldsa: Uint8Array;
 };
 
-/** The parsed .arshield container. */
-export type ArShieldContainer = {
+/** The parsed .elyshield container. */
+export type ElyShieldContainer = {
   version: number;
   algoId: number;
   kemCtPq: Uint8Array;
@@ -69,7 +69,7 @@ export type ArShieldContainer = {
 };
 
 /** The wrapped keyfile JSON structure. */
-export type ArShieldKeyfile = {
+export type ElyShieldKeyfile = {
   v: 1;
   kdf: 'argon2id';
   kdfParams: { t: number; m: number; p: number };

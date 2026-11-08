@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Check, Copy, ExternalLink, Terminal } from 'lucide-react';
 import { Background } from '@/components/background';
+import { BackgroundOrbit } from '@/components/background-orbit';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { Reveal } from '@/components/reveal';
@@ -13,38 +14,38 @@ import { cn } from '@/lib/utils';
 /* ---- Real data: mirrors packages/mcp/src/tools.ts exactly ---- */
 const TOOLS: { name: string; desc: string; inputs: string; outputs: string }[] = [
   {
-    name: 'arshield_encrypt_file',
-    desc: 'Encrypt bytes under hybrid ML-KEM-768 + X25519 and sign the envelope with ML-DSA-65 (ArShield .arshield container). Sign with a keyfile, a wallet signature, or a fresh ephemeral identity.',
+    name: 'elyshield_encrypt_file',
+    desc: 'Encrypt bytes under hybrid ML-KEM-768 + X25519 and sign the envelope with ML-DSA-65 (ElyShield .elyshield container). Sign with a keyfile, a wallet signature, or a fresh ephemeral identity.',
     inputs: 'data_base64, filename, keyfile_json?, passphrase?, signature_hex?, signature_hex_repeat?, address?',
     outputs: 'container_b64url',
   },
   {
-    name: 'arshield_decrypt_file',
-    desc: 'Decrypt an ArShield .arshield container (base64url). Verifies the ML-DSA-65 signature and returns the original file bytes and filename.',
+    name: 'elyshield_decrypt_file',
+    desc: 'Decrypt an ElyShield .elyshield container (base64url). Verifies the ML-DSA-65 signature and returns the original file bytes and filename.',
     inputs: 'container_b64url, keyfile_json?, passphrase?, signature_hex?, signature_hex_repeat?, address?',
     outputs: 'filename, original_size, data_b64',
   },
   {
-    name: 'arshield_send_message',
-    desc: 'Wrap a short plaintext (max 64KB) into a shareable encrypted ArShield message URL. The ciphertext lives in the URL #fragment. With an ephemeral sender the secret key is embedded so the recipient can decrypt without setup.',
+    name: 'elyshield_send_message',
+    desc: 'Wrap a short plaintext (max 64KB) into a shareable encrypted ElyShield message URL. The ciphertext lives in the URL #fragment. With an ephemeral sender the secret key is embedded so the recipient can decrypt without setup.',
     inputs: 'text, keyfile_json?, passphrase?, signature_hex?, signature_hex_repeat?, address?',
     outputs: 'url, embed_secret_key',
   },
   {
-    name: 'arshield_decrypt_message',
-    desc: 'Read an ArShield encrypted message URL (like the /m page does). Returns the plaintext and the signer key that sealed it.',
+    name: 'elyshield_decrypt_message',
+    desc: 'Read an ElyShield encrypted message URL (like the /m page does). Returns the plaintext and the signer key that sealed it.',
     inputs: 'url, keyfile_json?, passphrase?, signature_hex?, signature_hex_repeat?, address?',
     outputs: 'text, signer_mlkem, signer_x25519, signer_mldsa',
   },
   {
-    name: 'arshield_verify_seal',
-    desc: 'Parse the metadata fields an ArShield Quantum Seal PNG carries (unsigned) and, given an envelope, compare its sha256 against file_hash.',
+    name: 'elyshield_verify_seal',
+    desc: 'Parse the metadata fields an ElyShield Quantum Seal PNG carries (unsigned) and, given an envelope, compare its sha256 against file_hash.',
     inputs: 'seal_metadata_json, envelope_sha256?',
     outputs: 'fields, hash_matches_envelope',
   },
   {
-    name: 'arshield_sign_x402',
-    desc: 'Sign an x402 payment payload with ML-DSA-65 under context arshield-v1-x402. Returns the signature (base64url) the server can verify with the provided public key.',
+    name: 'elyshield_sign_x402',
+    desc: 'Sign an x402 payment payload with ML-DSA-65 under context elyshield-v1-x402. Returns the signature (base64url) the server can verify with the provided public key.',
     inputs: 'payload_base64, keyfile_json?, passphrase?, signature_hex?, signature_hex_repeat?, address?',
     outputs: 'signature_b64url, public_key_mldsa_b64url, verified',
   },
@@ -52,11 +53,11 @@ const TOOLS: { name: string; desc: string; inputs: string; outputs: string }[] =
 
 /**
  * Mirrors the published package. These drifted once already — the page announced
- * arshield-mcp@0.1.0 with a Node 20 floor while the registry had arshield-mcp
+ * elyshield-mcp@0.1.0 with a Node 20 floor while the registry had elyshield-mcp
  * and a Node 18 floor — so keep this in step with packages/mcp/package.json.
  */
 const META = [
-  ['PACKAGE', 'arshield-mcp'],
+  ['PACKAGE', 'elyshield-mcp'],
   ['VERSION', '0.1.4'],
   ['TRANSPORT', 'stdio'],
   ['RUNTIME', 'Node.js 18+'],
@@ -68,25 +69,25 @@ const CONFIGS = [
   {
     eyebrow: 'Claude Code',
     title: 'Terminal',
-    code: 'claude mcp add arshield -- npx -y arshield-mcp',
+    code: 'claude mcp add elyshield -- npx -y elyshield-mcp',
     caption: 'One line adds the server to Claude Code over stdio.',
   },
   {
     eyebrow: 'Claude Desktop',
     title: 'claude_desktop_config.json',
-    code: '{\n  "mcpServers": {\n    "arshield": {\n      "command": "npx",\n      "args": ["-y", "arshield-mcp"]\n    }\n  }\n}',
+    code: '{\n  "mcpServers": {\n    "elyshield": {\n      "command": "npx",\n      "args": ["-y", "elyshield-mcp"]\n    }\n  }\n}',
     caption: 'Drop this snippet into your config and restart the client.',
   },
   {
     eyebrow: 'Cursor',
     title: '~/.cursor/mcp.json',
-    code: '{\n  "mcpServers": {\n    "arshield": {\n      "command": "npx",\n      "args": ["-y", "arshield-mcp"]\n    }\n  }\n}',
+    code: '{\n  "mcpServers": {\n    "elyshield": {\n      "command": "npx",\n      "args": ["-y", "elyshield-mcp"]\n    }\n  }\n}',
     caption: 'Same shape, same server.',
   },
   {
     eyebrow: 'Any MCP client',
     title: 'stdio command',
-    code: 'command: npx\nargs: -y arshield-mcp',
+    code: 'command: npx\nargs: -y elyshield-mcp',
     caption: 'Works with any client that speaks Model Context Protocol over stdio.',
   },
 ];
@@ -109,6 +110,7 @@ export function McpClient() {
   return (
     <>
       <Background />
+      <BackgroundOrbit subtle />
       <Header />
       <main className="relative">
         <Section
@@ -118,19 +120,19 @@ export function McpClient() {
         >
           <Reveal>
             <div className="panel mx-auto max-w-2xl p-6">
-              <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#5b6474]">Install</div>
+              <div className="mb-3 text-[10px] font-medium text-[#77839a]">Install</div>
               <p className="mb-4 text-[14px] leading-relaxed text-[#8a93a3]">
-                Node.js 18 or later runs the server over stdio. Published as <span className="font-mono text-[13px] text-brand-gold">arshield-mcp</span> on npm.
+                Node.js 18 or later runs the server over stdio. Published as <span className="font-mono text-[13px] text-brand-gold">elyshield-mcp</span> on npm.
               </p>
               <div className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#03070f] px-4 py-3">
-                <code className="font-mono text-sm text-brand-gold">$ npx -y arshield-mcp</code>
-                <CopyBtn text="npx -y arshield-mcp" />
+                <code className="font-mono text-sm text-brand-gold">$ npx -y elyshield-mcp</code>
+                <CopyBtn text="npx -y elyshield-mcp" />
               </div>
 
               <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
                 {META.map(([k, v]) => (
                   <div key={k}>
-                    <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5b6474]">{k}</dt>
+                    <dt className="text-[10px] font-medium text-[#77839a]">{k}</dt>
                     <dd className="mt-0.5 font-mono text-[13px] text-[#c7cdd8]">{v}</dd>
                   </div>
                 ))}
@@ -138,15 +140,15 @@ export function McpClient() {
 
               <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
                 <a
-                  href="https://www.npmjs.com/package/arshield-mcp"
+                  href="https://www.npmjs.com/package/elyshield-mcp"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[13px] font-medium text-brand-gold hover:text-[#e9c35f]"
+                  className="inline-flex items-center gap-1.5 text-[13px] font-medium text-brand-gold hover:text-[#b3fdf4]"
                 >
                   View on npm <ExternalLink className="h-3.5 w-3.5" />
                 </a>
                 <a
-                  href="https://github.com/arshield/arshield/tree/master/packages/mcp"
+                  href="https://github.com/elyshield/elyshield/tree/master/packages/mcp"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#8a93a3] hover:text-[#c7cdd8]"
@@ -162,7 +164,7 @@ export function McpClient() {
               <Reveal key={c.title} delay={i * 0.05}>
                 <div className="panel h-full p-5">
                   <div className="mb-2 flex items-center justify-between">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5b6474]">{c.eyebrow}</div>
+                    <div className="text-[10px] font-medium text-[#77839a]">{c.eyebrow}</div>
                     <CopyBtn text={c.code} />
                   </div>
                   <h3 className="mb-3 font-mono text-[13px] text-[#e6e9ef]">{c.title}</h3>
@@ -181,7 +183,7 @@ export function McpClient() {
                 <thead>
                   <tr className="border-b border-white/[0.08] bg-white/[0.02]">
                     {['TOOL', 'DESCRIPTION', 'INPUTS', 'OUTPUTS'].map((h) => (
-                      <th key={h} className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5b6474]">{h}</th>
+                      <th key={h} className="px-4 py-3 text-[10px] font-medium text-[#77839a]">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -199,7 +201,7 @@ export function McpClient() {
             </div>
           </Reveal>
           <Reveal delay={0.1}>
-            <p className="mx-auto mt-5 max-w-3xl text-center text-[13px] leading-relaxed text-[#5b6474]">
+            <p className="mx-auto mt-5 max-w-3xl text-center text-[13px] leading-relaxed text-[#77839a]">
               Every tool runs locally over stdio. No network I/O, no telemetry. Keyfiles are unwrapped
               in-process with Argon2id and never persisted. A wallet signature is root key material: pass it
               over local stdio only, never a networked transport.
@@ -210,9 +212,9 @@ export function McpClient() {
         <Section title="One identity, two doors.">
           <div className="grid gap-4 md:grid-cols-3">
             {[
-              { t: 'Same envelope everywhere', b: 'Seal a file in /app, open it in your agent with the same keyfile or wallet signature. Identical keys, identical .arshield format.' },
-              { t: 'Public key can be derived from the signature', b: 'arshield_sign_x402 returns public_key_mldsa_b64url alongside the signature, so a verifier can check which key signed without a separate exchange.' },
-              { t: 'Runs on your machine', b: 'A local stdio server. No ArShield server, no network calls, no telemetry.' },
+              { t: 'Same envelope everywhere', b: 'Seal a file in /app, open it in your agent with the same keyfile or wallet signature. Identical keys, identical .elyshield format.' },
+              { t: 'Public key can be derived from the signature', b: 'elyshield_sign_x402 returns public_key_mldsa_b64url alongside the signature, so a verifier can check which key signed without a separate exchange.' },
+              { t: 'Runs on your machine', b: 'A local stdio server. No ElyShield server, no network calls, no telemetry.' },
             ].map((c, i) => (
               <Reveal key={c.t} delay={i * 0.06}>
                 <div className="panel h-full p-5">
@@ -228,20 +230,20 @@ export function McpClient() {
           <Reveal delay={0.12}>
             <div className="mx-auto mt-6 max-w-3xl">
               <div className="panel p-5">
-                <h3 className="mb-3 text-[13px] font-semibold uppercase tracking-[0.16em] text-[#5b6474]">
+                <h3 className="mb-3 text-[13px] font-medium text-[#77839a]">
                   What it does not do
                 </h3>
                 <ul className="space-y-2.5 text-[13px] leading-relaxed text-[#8a93a3]">
                   <li className="flex gap-2.5">
-                    <span className="mt-[7px] h-1 w-1 flex-none rounded-full bg-[#5b6474]" />
+                    <span className="mt-[7px] h-1 w-1 flex-none rounded-full bg-[#77839a]" />
                     <span><span className="text-[#c7cdd8]">No key management.</span> Lose the keyfile or the passphrase and the data is gone. There is no recovery path and no backdoor.</span>
                   </li>
                   <li className="flex gap-2.5">
-                    <span className="mt-[7px] h-1 w-1 flex-none rounded-full bg-[#5b6474]" />
+                    <span className="mt-[7px] h-1 w-1 flex-none rounded-full bg-[#77839a]" />
                     <span><span className="text-[#c7cdd8]">No metadata protection.</span> Filenames are encrypted, but container size reveals the approximate plaintext size.</span>
                   </li>
                   <li className="flex gap-2.5">
-                    <span className="mt-[7px] h-1 w-1 flex-none rounded-full bg-[#5b6474]" />
+                    <span className="mt-[7px] h-1 w-1 flex-none rounded-full bg-[#77839a]" />
                     <span><span className="text-[#c7cdd8]">Not independently audited.</span> The primitives are from audited libraries, but this release has not been through a third-party security review.</span>
                   </li>
                 </ul>
@@ -251,7 +253,7 @@ export function McpClient() {
 
           <Reveal delay={0.15}>
             <div className="mt-8 text-center">
-              <Link href="/docs/for-agents" className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-gold hover:text-[#e9c35f]">
+              <Link href="/docs/for-agents" className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-gold hover:text-[#b3fdf4]">
                 Read the agent guide →
               </Link>
             </div>

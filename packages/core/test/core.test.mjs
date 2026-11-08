@@ -1,4 +1,4 @@
-// ArShield core — end-to-end round-trip tests.
+// ElyShield core — end-to-end round-trip tests.
 // Run: node --test test/*.test.mjs  (after `npm run build`)
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -20,7 +20,7 @@ import {
   signX402,
   buildMessageUrl,
   parseMessageUrl,
-  ARSHIELD_DERIVATION_MESSAGE,
+  ELYSHIELD_DERIVATION_MESSAGE,
   SignatureError,
   CorruptFileError,
   InvalidPassphraseError,
@@ -56,11 +56,11 @@ test('rejects malformed wallet signatures', () => {
 
 test('file encrypt -> decrypt round trip returns identical bytes', async () => {
   const id = ephemeralIdentity();
-  const payload = enc.encode('ArShield: data can\'t run. #postquantum');
+  const payload = enc.encode('ElyShield: data can\'t run. #postquantum');
   const container = await encryptFile(payload, 'note.txt', id.publicKey, id.secretKey);
 
   assert.equal(container[0], MAGIC[0]);
-  assert.equal(dec.decode(container.slice(0, 5)), 'ARSHD');
+  assert.equal(dec.decode(container.slice(0, 5)), 'ELYSD');
 
   const out = await decryptFile(container, id.secretKey, id.publicKey);
   assert.equal(out.filename, 'note.txt');
@@ -125,7 +125,7 @@ test('message URL round trip with ephemeral embed', async () => {
   const id = ephemeralIdentity();
   const blob = await encryptFile(enc.encode('hello agent'), 'msg.txt', id.publicKey, id.secretKey);
   const url = buildMessageUrl(blob, id.publicKey, { sk: id.secretKey, pk: id.publicKey });
-  assert.ok(url.startsWith('https://arc-shield.xyz/m/#v1.'));
+  assert.ok(url.startsWith('https://elyshield.xyz/m/#v1.'));
 
   const parsed = parseMessageUrl(url);
   assert.deepEqual(parsed.blob, blob);
@@ -147,14 +147,14 @@ test('x402 signatures are context-bound (cannot cross-use file signatures)', () 
   const sig = signX402(id.secretKey.mldsa, payload);
   assert.equal(verifyX402(id.publicKey.mldsa, payload, sig), true);
   // A file-context signature must not verify in the x402 context.
-  const fileSig = sign(id.secretKey.mldsa, payload, 'arshield-v1-file');
+  const fileSig = sign(id.secretKey.mldsa, payload, 'elyshield-v1-file');
   assert.equal(verifyX402(id.publicKey.mldsa, payload, fileSig), false);
   // ...and verify() in file context must reject an x402 signature.
-  assert.equal(verify(id.publicKey.mldsa, payload, sig, 'arshield-v1-file'), false);
+  assert.equal(verify(id.publicKey.mldsa, payload, sig, 'elyshield-v1-file'), false);
 });
 
-test('derivation message carries the ArShield domain', () => {
-  assert.match(ARSHIELD_DERIVATION_MESSAGE, /Domain: arc-shield\.xyz/);
+test('derivation message carries the ElyShield domain', () => {
+  assert.match(ELYSHIELD_DERIVATION_MESSAGE, /Domain: elyshield\.xyz/);
   // No other domain should appear — the message must name exactly one origin.
-  assert.equal((ARSHIELD_DERIVATION_MESSAGE.match(/Domain:\s*\S+/g) ?? []).length, 1);
+  assert.equal((ELYSHIELD_DERIVATION_MESSAGE.match(/Domain:\s*\S+/g) ?? []).length, 1);
 });

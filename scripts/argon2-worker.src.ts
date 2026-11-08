@@ -34,10 +34,12 @@ type Req = {
   p: number;
   dkLen: number;
   info: string;
+  /** HKDF salt. Must match the core package or keyfiles are not interchangeable. */
+  hkdfSalt: string;
 };
 
 self.onmessage = (e: MessageEvent<Req>) => {
-  const { id, passphrase, salt, t, m, p, dkLen, info } = e.data;
+  const { id, passphrase, salt, t, m, p, dkLen, info, hkdfSalt } = e.data;
 
   try {
     const out = argon2id(utf8.encode(passphrase), Uint8Array.from(salt), { t, m, p, dkLen });
@@ -45,7 +47,12 @@ self.onmessage = (e: MessageEvent<Req>) => {
     // Pass boundaries are not exposed by @noble, so progress is reported by the
     // caller's timer instead. What this worker guarantees is only that the
     // expensive part is not on the UI thread.
-    const wrapKey = hkdf(sha256, out, undefined, utf8.encode(info), 32);
+    // hkdfSalt is NOT optional. The core package derives with HKDF_SALT
+    // ('elyshield-v1' as a string), and this worker used to pass undefined here,
+    // which produced a different key: keyfiles written in the browser could not
+    // be opened by the MCP server and vice versa. The salt now comes from the
+    // caller, which reads it from the same constants module the core uses.
+    const wrapKey = hkdf(sha256, out, utf8.encode(hkdfSalt), utf8.encode(info), 32);
     self.postMessage({ id, type: 'done', wrapKey: Array.from(wrapKey) });
   } catch (err) {
     self.postMessage({

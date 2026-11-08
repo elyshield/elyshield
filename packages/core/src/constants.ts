@@ -1,11 +1,11 @@
 /**
- * ArShield constants — the fixed parameters of the .arshield container and the
+ * ElyShield constants — the fixed parameters of the .elyshield container and the
  * key-derivation scheme. Every value here is part of the wire format: change it and
  * every existing envelope stops opening. Bump VERSION when you do.
  */
 
-/** Magic bytes at the start of every .arshield container: "ARSHD". */
-export const MAGIC = new Uint8Array([0x41, 0x52, 0x53, 0x48, 0x44]);
+/** Magic bytes at the start of every .elyshield container: "ELYSD". */
+export const MAGIC = new Uint8Array([0x45, 0x4c, 0x59, 0x53, 0x44]);
 export const MAGIC_LEN = 5;
 
 /** Container format version. */
@@ -17,14 +17,14 @@ export const ALGO_ID = {
 } as const;
 
 /* --- Domain-separation contexts (bound into signatures) --- */
-export const FILE_CONTEXT = 'arshield-v1-file';
-export const MESSAGE_CONTEXT = 'arshield-v1-message';
-export const X402_CONTEXT = 'arshield-v1-x402';
+export const FILE_CONTEXT = 'elyshield-v1-file';
+export const MESSAGE_CONTEXT = 'elyshield-v1-message';
+export const X402_CONTEXT = 'elyshield-v1-x402';
 
 /** HKDF salt for deriving the three seeds from an IKM. */
-export const HKDF_SALT = 'arshield-v1';
+export const HKDF_SALT = 'elyshield-v1';
 /** HKDF salt for combining the two KEM shared secrets. */
-export const HKDF_SALT_HYBRID = 'arshield-v1-hybrid';
+export const HKDF_SALT_HYBRID = 'elyshield-v1-hybrid';
 /** HKDF info labels for per-primitive seed derivation. */
 export const HKDF_INFO_MLKEM_SEED = 'mlkem-seed';
 export const HKDF_INFO_X25519_SEED = 'x25519-seed';
@@ -34,9 +34,9 @@ export const HKDF_INFO_AES_KEY = 'aes-256-gcm';
 /** HKDF info label for the keyfile wrapping key. */
 export const HKDF_INFO_KEYFILE_WRAP = 'keyfile-wrap-key';
 /** AAD for the wrapped keyfile payload. */
-export const KEYFILE_AAD = 'arshield-keyfile-v1';
+export const KEYFILE_AAD = 'elyshield-keyfile-v1';
 /** IKM label for wallet-derived identities (kept as a constant for tooling). */
-export const WALLET_KDF_MESSAGE = 'arshield-key-derivation-v1';
+export const WALLET_KDF_MESSAGE = 'elyshield-key-derivation-v1';
 
 /* --- Sizes (bytes) --- */
 export const ML_KEM_SEED_LEN = 64;
@@ -60,14 +60,14 @@ export const ARGON2ID_SALT_LEN = 16;
 /** Maximum plaintext a single message URL may carry. */
 export const MAX_MESSAGE_PLAINTEXT = 64 * 1024;
 
-/** The exact message a wallet signs to derive an ArShield identity. */
-export const ARSHIELD_DERIVATION_MESSAGE =
-  'ArShield keypair derivation v1\n' +
+/** The exact message a wallet signs to derive an ElyShield identity. */
+export const ELYSHIELD_DERIVATION_MESSAGE =
+  'ElyShield keypair derivation v1\n' +
   '\n' +
   'This signature derives your personal post-quantum encryption keypair.\n' +
   'It grants no permissions and costs no gas.\n' +
   '\n' +
-  'Domain: arc-shield.xyz';
+  'Domain: elyshield.xyz';
 
 /** Base URL for shareable encrypted messages (data lives in the #fragment). */
 /**
@@ -82,8 +82,8 @@ export const ARSHIELD_DERIVATION_MESSAGE =
  * fragment is appended here so a value can never produce a doubled path.
  */
 const MESSAGE_URL_ORIGIN = (
-  (typeof process !== 'undefined' && process.env?.ARSHIELD_MESSAGE_URL_BASE) ||
-  'https://arc-shield.xyz'
+  (typeof process !== 'undefined' && process.env?.ELYSHIELD_MESSAGE_URL_BASE) ||
+  'https://elyshield.xyz'
 ).replace(/\/+$/, '');
 
 export const MESSAGE_URL_BASE = `${MESSAGE_URL_ORIGIN}/m/#`;

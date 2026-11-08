@@ -1,10 +1,10 @@
 {
-  "name": "arshield-mcp",
+  "name": "elyshield-mcp",
   "version": "0.1.4",
-  "description": "ArShield MCP server \u2014 post-quantum file encryption for AI agents. Hybrid ML-KEM-768 + X25519, ML-DSA-65 signatures, AES-256-GCM. Runs fully local over stdio: keys never leave the machine.",
+  "description": "ElyShield MCP server \u2014 post-quantum file encryption for AI agents. Hybrid ML-KEM-768 + X25519, ML-DSA-65 signatures, AES-256-GCM. Runs fully local over stdio: keys never leave the machine.",
   "type": "module",
   "bin": {
-    "arshield-mcp": "dist/server.js"
+    "elyshield-mcp": "dist/server.js"
   },
   "main": "./dist/server.js",
   "files": [
@@ -29,7 +29,7 @@
     "tsup": "^8.3.5",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
-    "@arshield/core": "file:../core"
+    "@elyshield/core": "file:../core"
   },
   "license": "MIT",
   "keywords": [
@@ -43,22 +43,22 @@
     "encryption",
     "cryptography",
     "ai-agents",
-    "arc",
-    "arshield",
+    "elysium",
+    "elyshield",
     "quantum-safe"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/arshield/arshield.git",
+    "url": "git+https://github.com/elyshield/elyshield.git",
     "directory": "packages/mcp"
   },
-  "homepage": "https://arc-shield.xyz",
+  "homepage": "https://elyshield.xyz",
   "bugs": {
-    "url": "https://github.com/arshield/arshield/issues"
+    "url": "https://github.com/elyshield/elyshield/issues"
   },
-  "author": "ArShield",
+  "author": "ElyShield",
   "publishConfig": {
     "access": "public"
   },
-  "_comment_bundled": "@arshield/core is bundled into dist/server.js by tsup (noExternal). It is a devDependency only \u2014 publishing a file: reference would produce a package that installs and then crashes."
+  "_comment_bundled": "@elyshield/core is bundled into dist/server.js by tsup (noExternal). It is a devDependency only \u2014 publishing a file: reference would produce a package that installs and then crashes."
 }

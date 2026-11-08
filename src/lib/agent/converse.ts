@@ -50,7 +50,7 @@ const RULES: Rule[] = [
     test: /\b(who are you|what are you|siapa ?(kamu|lo|lu|kah)|kamu siapa|lo siapa)\b/,
     reply: {
       kind: 'about',
-      text: 'I am the ArShield agent. I do four things: read what a file is, seal it into a post-quantum container, open a container, and build a shareable secret message. I run in this tab — no server sees your file or your key.',
+      text: 'I am the ElyShield agent. I do four things: read what a file is, seal it into a post-quantum container, open a container, and build a shareable secret message. I run in this tab — no server sees your file or your key.',
     },
   },
   {

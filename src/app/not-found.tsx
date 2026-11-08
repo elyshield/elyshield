@@ -2,11 +2,12 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { ArrowLeft, FileQuestion } from 'lucide-react';
 import { Background } from '@/components/background';
+import { BackgroundOrbit } from '@/components/background-orbit';
 import { Logo } from '@/components/header';
 import { Footer } from '@/components/footer';
 
 export const metadata: Metadata = {
-  title: 'Not found | ArShield',
+  title: 'Not found | ElyShield',
   robots: { index: false, follow: true },
 };
 
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
  */
 export default function NotFound() {
   const paths = [
-    { href: '/', label: 'Home', note: 'What ArShield is' },
+    { href: '/', label: 'Home', note: 'What ElyShield is' },
     { href: '/app', label: 'Launch app', note: 'Seal a file in your browser' },
     { href: '/mcp', label: 'MCP server', note: 'Use it from an agent' },
     { href: '/docs', label: 'Docs', note: 'Architecture and security' },
@@ -30,10 +31,11 @@ export default function NotFound() {
   return (
     <>
       <Background />
+      <BackgroundOrbit subtle />
       <div className="relative flex min-h-screen flex-col">
         <header className="border-b border-white/[0.06] bg-[#020610]/70 backdrop-blur-xl">
           <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-            <Link href="/" aria-label="ArShield home">
+            <Link href="/" aria-label="ElyShield home">
               <Logo />
             </Link>
             <Link
@@ -51,7 +53,7 @@ export default function NotFound() {
               <span className="grid h-11 w-11 place-items-center rounded-xl border border-brand-gold/25 bg-brand-gold/[0.07]">
                 <FileQuestion className="h-5 w-5 text-brand-gold" />
               </span>
-              <span className="font-mono text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[#8b94a4]">
+              <span className="font-mono text-[11.5px] font-medium text-[#8b94a4]">
                 Error 404
               </span>
             </div>

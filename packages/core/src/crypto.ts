@@ -4,7 +4,7 @@ import { ml_dsa65 } from '@noble/post-quantum/ml-dsa';
 import { ml_kem768 } from '@noble/post-quantum/ml-kem';
 import * as constants from './constants.js';
 import { hkdfDerive } from './hkdf.js';
-import type { ArShieldKeyPair, ArShieldPublicKey, ArShieldSecretKey } from './types.js';
+import type { ElyShieldKeyPair, ElyShieldPublicKey, ElyShieldSecretKey } from './types.js';
 
 const utf8 = new TextEncoder();
 
@@ -26,7 +26,7 @@ function combineSharedSecrets(ssPq: Uint8Array, ssCls: Uint8Array): Uint8Array {
  * Hybrid encapsulation: an attacker must break both ML-KEM-768 and X25519 to recover
  * the AES key. Returns the two ciphertexts plus the derived key.
  */
-export function hybridEncapsulate(recipient: ArShieldPublicKey): EncapResult {
+export function hybridEncapsulate(recipient: ElyShieldPublicKey): EncapResult {
   const pq = ml_kem768.encapsulate(recipient.mlkem);
   const ephSk = randomBytes(constants.X25519_SK_LEN);
   const ephPk = x25519.getPublicKey(ephSk);
@@ -41,7 +41,7 @@ export function hybridEncapsulate(recipient: ArShieldPublicKey): EncapResult {
 
 /** Recover the AES key from the two ciphertexts and the recipient secret key. */
 export function hybridDecapsulate(
-  sk: ArShieldSecretKey,
+  sk: ElyShieldSecretKey,
   kemCtPq: Uint8Array,
   kemCtCls: Uint8Array,
 ): Uint8Array {
@@ -77,4 +77,4 @@ export function verify(
   return mlDsaCtx.verify(publicKey, msg, signature, utf8.encode(context));
 }
 
-export type { ArShieldKeyPair };
+export type { ElyShieldKeyPair };
