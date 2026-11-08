@@ -19,3 +19,4 @@ packages/*/dist/
 .env.local
 .env*.local
 *.tgz
+out-demo
