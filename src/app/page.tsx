@@ -164,13 +164,14 @@ function Hero() {
         <HeroItem delay={0.36}>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Magnetic strength={5}>
-              {/* The primary CTA points at the agent, not the workspace.
-                  Sealing a file is the thing a visitor came to do, and the
-                  agent is the shortest path to it: no wallet, no form, drop a
-                  file and say what to do. Sending them to /app first asks them
-                  to choose a key before they have seen what the product does. */}
+              {/* The primary CTA points at the workspace while the agent is
+                  closed. It used to lead with /chat because that is the
+                  shortest path for a first-time visitor — but a hero button
+                  that goes nowhere is worse than the second-best destination,
+                  and /app seals the same envelope with the same crypto. When
+                  the agent ships, point this back at /chat. */}
               <Link
-                href="/chat"
+                href="/app"
                 className="group relative inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-[3px] px-7 text-[15px] font-semibold transition-all duration-300 bg-gold-gradient text-brand-ink shadow-gold-glow-lg"
               >
                 Seal a file
@@ -289,7 +290,7 @@ function CopyButton({ text }: { text: string }) {
 
 function ThreeSurfaces() {
   const items = [
-    { n: '01', t: 'Humans', tag: 'agent · /chat', b: 'Drop a file and tell the agent what to do — it reads the file first, then offers the one action that applies. Out comes a .elyshield envelope only your wallet or your key file can open, plus a Quantum Seal receipt. The same thing as a form at /app if you prefer.', cta: 'Open the agent', href: '/chat' },
+    { n: '01', t: 'Humans', tag: 'agent · /chat · closed', b: 'Drop a file and tell the agent what to do — it reads the file first, then offers the one action that applies. Out comes a .elyshield envelope only your wallet or your key file can open, plus a Quantum Seal receipt. The same thing as a form at /app if you prefer.', cta: 'Open the app', href: '/app' },
     { n: '02', t: 'Agents (MCP)', tag: 'mcp · stdio', b: 'Call elyshield_encrypt_file from Claude, Cursor, or any MCP-aware agent. Same envelope, same crypto, same signer model. Zero browser.', cta: 'MCP server', href: '/mcp' },
     { n: '03', t: 'Payments (x402)', tag: 'mcp · elyshield_sign_x402', b: 'Agents sign x402 payment payloads with ML-DSA-65 over MCP, under their own context, so anyone holding the agent’s post-quantum public key can check which key signed. Every paid call gets its own Seal once Shield ships.', cta: 'See elyshield_sign_x402', href: '/mcp' },
   ];
@@ -385,8 +386,13 @@ function Tiers() {
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {TIERS.map((t, i) => (
-          <Reveal key={t.name} delay={i * 0.06}>
-            <div className={cn('panel relative h-full p-6')}>
+          <Reveal key={t.name} delay={i * 0.06} className="h-full">
+            {/* Flex column so the CTA pins to the bottom of every card, and a
+                fixed-height blurb so the two metric rows line up across all
+                four. Without this, a blurb that wraps to three lines instead of
+                two pushes its numbers and link down, and the row of cards stops
+                reading as one table. */}
+            <div className={cn('panel relative flex h-full flex-col p-6')}>
               {t.badge && (
                 <div className="absolute right-4 top-4 rounded-[3px] border border-brand-gold/25 bg-brand-gold/[0.06] px-2 py-0.5 text-[9px] font-medium text-brand-gold">
                   {t.badge}
@@ -394,17 +400,20 @@ function Tiers() {
               )}
               <h3 className="text-lg font-semibold text-[#e6e9ef]">{t.name}</h3>
               <div className="mt-1 text-[13px] text-brand-gold">{t.req}</div>
-              <p className="mt-3 min-h-[2.5rem] text-[13px] leading-relaxed text-[#8a93a3]">{t.blurb}</p>
+              {/* 4rem holds three lines at 13px/1.625, which is the longest any
+                  of these blurbs reaches before the widest breakpoint. */}
+              <p className="mt-3 min-h-[4rem] text-[13px] leading-relaxed text-[#8a93a3]">{t.blurb}</p>
               <div className="my-4 h-px bg-white/[0.06]" />
               <div className="text-[10px] font-medium text-[#77839a]">Encryptions</div>
               <div className="text-2xl font-bold text-[#e6e9ef]">{t.enc}</div>
               <div className="mt-3 text-[10px] font-medium text-[#77839a]">Max file size</div>
               <div className="text-2xl font-bold text-[#e6e9ef]">{t.size}</div>
-              <ul className="mt-5 space-y-2 text-[12.5px] text-[#8a93a3]">
-                <li className="flex items-start gap-2"><Check className="mt-0.5 h-3.5 w-3.5 flex-none text-brand-gold" />Quantum Seal on every encrypted file</li>
-                <li className="flex items-start gap-2"><Check className="mt-0.5 h-3.5 w-3.5 flex-none text-brand-gold" />Wallet or key file mode</li>
-              </ul>
-              <Link href="/app" className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-brand-gold transition-all hover:gap-2.5">
+              {/* The two bullets that sat here listed "Quantum Seal on every
+                  encrypted file" and "Wallet or key file mode" — true on every
+                  plan, so repeating them four times told the reader nothing
+                  about what actually changes between the cards. Removed; the
+                  CTA closes the card directly. */}
+              <Link href="/app" className="mt-auto pt-6 inline-flex items-center gap-1.5 text-sm font-medium text-brand-gold transition-all hover:gap-2.5">
                 {t.cta}
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>

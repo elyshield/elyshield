@@ -6,7 +6,8 @@ const COLS = [
   {
     title: 'Product',
     links: [
-      { href: '/chat', label: 'Agents' },
+      // Closed for now: the page exists but the nav should not offer a way in.
+      { href: '/chat', label: 'Agents', disabled: true },
       { href: '/app', label: 'Launch app' },
       { href: '/mcp', label: 'MCP server' },
       { href: '/m', label: 'Messages' },
@@ -67,12 +68,22 @@ export function Footer() {
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((l) => (
                   <li key={l.label}>
+                    {(l as { disabled?: boolean }).disabled ? (
+                      // No <a>, so nothing to click or open in a new tab.
+                      <span
+                        aria-disabled="true"
+                        className="cursor-not-allowed text-sm text-[#5a6474]"
+                      >
+                        {l.label}
+                      </span>
+                    ) : (
                     <Link
                       href={l.href}
                       className="text-sm text-[#9aa3b2] transition-colors hover:text-[#e6e9ef]"
                     >
                       {l.label}
                     </Link>
+                    )}
                   </li>
                 ))}
               </ul>

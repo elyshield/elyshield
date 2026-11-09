@@ -34,11 +34,26 @@ export function Logo({ className = '' }: { className?: string }) {
   );
 }
 
-const NAV = [
+type NavItem = {
+  href: string;
+  label: string;
+  /**
+   * Rendered as a non-clickable element instead of a link. Used while a page
+   * exists but should not be reachable yet — the route still builds, the nav
+   * simply stops advertising a way in. Flip to false (or delete the field) to
+   * open it again; nothing else has to change.
+   */
+  disabled?: boolean;
+};
+
+const NAV: NavItem[] = [
   // Agents leads the nav. It is the surface a first-time visitor can actually
   // use — no wallet, no setup, drop a file and it reads it — so it belongs
   // before the reference pages rather than after them.
-  { href: '/chat', label: 'Agents' },
+  //
+  // Currently closed: the route is built and browsable by URL, but the nav item
+  // is inert until the page is ready to be the first thing a visitor lands on.
+  { href: '/chat', label: 'Agents', disabled: true },
   { href: '/mcp', label: 'MCP' },
   { href: '/m', label: 'Messages' },
   { href: '/verify', label: 'Verify' },
@@ -64,15 +79,29 @@ export function Header() {
         </Link>
 
         <nav className="hidden items-center gap-6 lg:flex">
-          {NAV.map((n) => (
-            <Link
-              key={n.href}
-              href={n.href}
-              className="text-[13px] font-normal text-[#9aa3b2] transition-colors hover:text-[#e6e9ef]"
-            >
-              {n.label}
-            </Link>
-          ))}
+          {NAV.map((n) =>
+            n.disabled ? (
+              // Inert by design: no <a>, no href, so there is nothing to click,
+              // middle-click, or open in a new tab. `aria-disabled` tells a
+              // screen reader what the muted colour says visually.
+              <span
+                key={n.href}
+                aria-disabled="true"
+                title={`${n.label} — coming soon`}
+                className="cursor-not-allowed text-[13px] font-normal text-[#5a6474]"
+              >
+                {n.label}
+              </span>
+            ) : (
+              <Link
+                key={n.href}
+                href={n.href}
+                className="text-[13px] font-normal text-[#9aa3b2] transition-colors hover:text-[#e6e9ef]"
+              >
+                {n.label}
+              </Link>
+            ),
+          )}
         </nav>
 
         <div className="flex items-center gap-2.5">
@@ -120,16 +149,27 @@ export function Header() {
       {open && (
         <div className="border-t border-white/[0.06] bg-[#020610] px-4 py-4 lg:hidden">
           <nav className="flex flex-col gap-1">
-            {NAV.map((n) => (
-              <Link
-                key={n.href}
-                href={n.href}
-                onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-sm text-[#9aa3b2] hover:bg-white/[0.04] hover:text-white"
-              >
-                {n.label}
-              </Link>
-            ))}
+            {NAV.map((n) =>
+              n.disabled ? (
+                <span
+                  key={n.href}
+                  aria-disabled="true"
+                  className="cursor-not-allowed rounded-lg px-3 py-2.5 text-sm text-[#5a6474]"
+                >
+                  {n.label}
+                  <span className="ml-2 text-[11px] text-[#4a5361]">coming soon</span>
+                </span>
+              ) : (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg px-3 py-2.5 text-sm text-[#9aa3b2] hover:bg-white/[0.04] hover:text-white"
+                >
+                  {n.label}
+                </Link>
+              ),
+            )}
 
             {/* The desktop X link is hidden on small screens, so the mobile menu
                 carries it instead of dropping it. */}
