@@ -83,7 +83,7 @@ export function Footer() {
         <div className="mt-12 flex flex-col gap-3 border-t border-white/[0.06] pt-6 text-[13px] text-[#77839a] sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 ElyShield. Built for Elysium. Built on open-source noble cryptography.</p>
           <p className="font-medium text-[#7b8493]">
-            One plan for everyone.
+            Free to start. Four plans by holding $ELYSHIELD.
           </p>
         </div>
       </div>

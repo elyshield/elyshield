@@ -13,7 +13,7 @@ import { ephemeralIdentity, unwrapKeyfile, wrapKeyfile, type ElyShieldKeyPair } 
 import { ARGON2ID_PARAMS_PROD } from '@/lib/elyshield/constants';
 import { KeyfileDialog } from '@/components/keyfile-dialog';
 import { useScreenTransition, SWAP_CSS } from '@/lib/use-screen-transition';
-import { fetchTier, TIER_BY_KEY, type Tier } from '@/lib/tiers';
+import { fetchTier, formatDaily, TIER_BY_KEY, type Tier } from '@/lib/tiers';
 import { cn } from '@/lib/utils';
 
 type KeySource = { kind: 'wallet'; label: string; kp: ElyShieldKeyPair } | { kind: 'keyfile'; label: string; kp: ElyShieldKeyPair } | null;
@@ -36,7 +36,9 @@ export function AppClient() {
 
   // No token gate: one plan for everyone, so the badge never claims a level that
   // has to be verified against a balance.
-  const tierBadge = `${tier.name.toUpperCase()} · NO TOKEN GATE`;
+  // The plan is real now, so the badge names it and its cap instead of
+  // claiming there is no gate at all.
+  const tierBadge = `${tier.name.toUpperCase()} · ${formatDaily(tier.encryptionsPerDay)}`;
 
   const pickWallet = async () => {
     setErr(null);

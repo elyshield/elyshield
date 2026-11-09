@@ -135,7 +135,7 @@ export function Header() {
                 carries it instead of dropping it. */}
             <div className="mt-2 flex items-center gap-3 px-3 py-1">
               <SocialLinks tone="bright" />
-              <span className="text-[13px] text-[#9aa3b2]">Follow @arcshield_</span>
+              <span className="text-[13px] text-[#9aa3b2]">Follow @elyshieldxyz</span>
             </div>
 
             {mounted && wallet ? (

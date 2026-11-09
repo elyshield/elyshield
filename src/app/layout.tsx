@@ -84,8 +84,8 @@ export const metadata: Metadata = {
     description:
       'ElyShield seals it post-quantum, on your device. Your agents too. ML-KEM-768 + X25519 hybrid, ML-DSA-65 signed, MCP-native.',
     images: ['/seo/twitter-image.png'],
-    site: '@arcshield_',
-    creator: '@arcshield_',
+    site: '@elyshieldxyz',
+    creator: '@elyshieldxyz',
   },
   icons: {
     icon: '/icon.png',
@@ -126,7 +126,7 @@ const JSON_LD = {
     'x402 payment receipt signing',
     'Runs client-side, no backend',
   ],
-  sameAs: ['https://x.com/arcshield_'],
+  sameAs: ['https://x.com/elyshieldxyz'],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

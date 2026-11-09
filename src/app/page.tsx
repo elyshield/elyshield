@@ -28,8 +28,52 @@ const STANDARDS = [
   ['@noble', 'OPEN-SOURCE CRYPTO'],
 ];
 
+/**
+ * Plan cards on the landing page.
+ *
+ * Kept as literal copy rather than derived from src/lib/tiers.ts so the page can
+ * describe each plan in its own words without dragging the runtime gate (and its
+ * RPC reads) into the marketing bundle. The numbers must stay in step with that
+ * file — Free is the un-tokened plan, the other three are decided by how much
+ * $ELYSHIELD a wallet holds.
+ */
 const TIERS = [
-  { name: 'Free', req: 'No token, no account', blurb: 'Every envelope, every file, every tool. One plan, no gate.', enc: '25 / 24h', size: '100 MB', badge: 'Everyone', cta: 'Start free' },
+  {
+    name: 'Free',
+    req: 'No token, no account',
+    blurb: 'Enough to seal a few files a day and see how the envelope works.',
+    enc: '3 / 24h',
+    size: '25 MB',
+    badge: 'Everyone',
+    cta: 'Start free',
+  },
+  {
+    name: 'Holder',
+    req: '$20 in $ELYSHIELD',
+    blurb: 'The everyday plan. Twenty-five envelopes a day, up to 100 MB each.',
+    enc: '25 / 24h',
+    size: '100 MB',
+    badge: 'Token gate',
+    cta: 'Hold $ELYSHIELD',
+  },
+  {
+    name: 'Pro',
+    req: '$100 in $ELYSHIELD',
+    blurb: 'For heavy use: gigabyte files and hundreds of envelopes a day.',
+    enc: '250 / 24h',
+    size: '1 GB',
+    badge: 'Token gate',
+    cta: 'Hold $ELYSHIELD',
+  },
+  {
+    name: 'Whale',
+    req: '$1,000 in $ELYSHIELD',
+    blurb: 'No daily cap and no size cap. Built for desks and archives.',
+    enc: 'Unlimited',
+    size: 'No cap',
+    badge: 'Token gate',
+    cta: 'Hold $ELYSHIELD',
+  },
 ];
 
 const FAQS = [
@@ -336,8 +380,8 @@ function Tiers() {
     <Section
       id="limits"
       eyebrow="Limits"
-      title={<>One plan.<br className="hidden sm:block" /> No token, no tier, no account.</>}
-      subtitle="ElyShield is free to use at full capacity. There is no token gating the app, nothing to hold and nothing to buy: every wallet and every key file gets the same limits from the first second."
+      title={<>Four plans.<br className="hidden sm:block" /> Free without a token, the rest by holding it.</>}
+      subtitle="Sealing is never sold per file. Free covers a few envelopes a day with no account at all; holding $ELYSHIELD raises the daily cap and the file size, and nothing else changes — same crypto, same envelope, same six MCP tools on every plan."
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {TIERS.map((t, i) => (
